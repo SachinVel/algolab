@@ -5,10 +5,7 @@ import com.enpm613.algolab.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -21,6 +18,25 @@ public class UserController {
     public ResponseEntity<Object> registerUser(@RequestBody User user) {
         try {
             return ResponseEntity.ok(userService.registerUser(user));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/update/{userId}")
+    public ResponseEntity<Object> updateUser(@PathVariable("userId") User user) {
+        try {
+            return ResponseEntity.ok(userService.updateUser(user));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete/{userId}")
+    public ResponseEntity<Object> deleteUser(@PathVariable("userId") String userId) {
+        try {
+            userService.deleteUser(userId);
+            return ResponseEntity.ok("User deleted successfully.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
