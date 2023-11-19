@@ -3,11 +3,13 @@ package com.enpm613.algolab.entity.user;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 public class User {
+    @Id
     private String id;
     private String firstName;
     private String lastName;
