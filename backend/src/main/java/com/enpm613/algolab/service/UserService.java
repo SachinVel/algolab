@@ -14,6 +14,11 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
+    public User getUser(String userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found."));
+    }
+
     public User registerUser(User user) {
         if (!validator.validateUsername(user.getUsername())) {
             throw new RuntimeException("Username already exists.");
@@ -33,7 +38,7 @@ public class UserService {
         User existingUser = userRepository.findById(updatedUser.getId())
                 .orElseThrow(() -> new RuntimeException("User not found."));
 
-        // Check if the updated username is valid and not taken by another user, throw exception if not
+        // Check if the updated username is valid and not taken by another user
         if (!existingUser.getUsername().equals(updatedUser.getUsername()) &&
                 !validator.validateUsername(updatedUser.getUsername())) {
             throw new RuntimeException("Username already exists.");
