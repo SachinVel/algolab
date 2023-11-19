@@ -1,11 +1,16 @@
 
 import React from 'react';
-const Register = lazy(() => import("../pages/Register"));
+import { Alert, Box, CircularProgress, Snackbar } from "@mui/material";
+import { BrowserRouter, Routes, Route, Navigate, Router } from "react-router-dom";
+import { lazy, Suspense, useEffect, useState } from "react";
 
 export default function Home() {
+
     const greeting = 'Hello Function Component!';
 
     return (
-        <h1>{greeting}</h1>
+        <Box>
+            <h1>Home Component</h1>
+        </Box>
     );
 }
