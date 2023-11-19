@@ -33,7 +33,7 @@ public class UserService {
         User existingUser = userRepository.findById(updatedUser.getId())
                 .orElseThrow(() -> new RuntimeException("User not found."));
 
-        // Check if the updated username is valid and not taken by another user
+        // Check if the updated username is valid and not taken by another user, throw exception if not
         if (!existingUser.getUsername().equals(updatedUser.getUsername()) &&
                 !validator.validateUsername(updatedUser.getUsername())) {
             throw new RuntimeException("Username already exists.");
