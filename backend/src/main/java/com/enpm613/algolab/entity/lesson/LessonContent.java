@@ -1,6 +1,8 @@
-package com.enpm613.algolab.entity.user;
+package com.enpm613.algolab.entity.lesson;
 
-public class LessonContentEntity {
+import java.util.List;
+
+public class LessonContent {
 
     private Long lessonContentId;
 
