@@ -15,6 +15,15 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @GetMapping("/get/{userId}")
+    public ResponseEntity<Object> getUser(@PathVariable("userId") String userId) {
+        try {
+            return ResponseEntity.ok(userService.getUser(userId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@RequestBody User user) {
         try {
@@ -24,8 +33,8 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update/{userId}")
-    public ResponseEntity<Object> updateUser(@PathVariable("userId") User user) {
+    @PutMapping("/update")
+    public ResponseEntity<Object> updateUser(@RequestBody User user) {
         try {
             return ResponseEntity.ok(userService.updateUser(user));
         } catch (Exception e) {
@@ -43,11 +52,10 @@ public class UserController {
         }
     }
 
-    @PostMapping("/validate-username")
-    public ResponseEntity<Boolean> validateUsername(@RequestBody String username) {
+    @GetMapping("/validate-username")
+    public ResponseEntity<Boolean> validateUsername(@RequestParam("username") String username) {
         return ResponseEntity.ok(userService.isValidUsername(username));
     }
-
     @GetMapping("/login")
     public ResponseEntity<Boolean> login() {
         System.out.println("login");
