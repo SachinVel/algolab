@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Button, TextField, Link, Box, Typography } from '@mui/material';
 
-import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Snackbar from '@mui/material/Snackbar';
+import { sampleData } from "../../utils/mockData";
+
+import bcrypt from 'bcryptjs';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
+// const salt = bcrypt.genSaltSync(10)
+// console.log('salt : ',salt);
+const salt = process.env.REACT_APP_SALT;
+console.log(salt)
 
 export default function Login({ setLoggedIn }) {
 
@@ -22,6 +29,9 @@ export default function Login({ setLoggedIn }) {
   const location = useLocation();
   const navigate = useNavigate();
 
+  
+
+
 
   const onUsernameChange = (event) => {
     setUserName(event.target.value);
@@ -33,6 +43,20 @@ export default function Login({ setLoggedIn }) {
 
   const login = async (event) => {
     event.preventDefault();
+    console.log(salt);
+    const hashedPassword = bcrypt.hashSync(password, salt);
+
+    let response = sampleData['login'].response;
+
+    if( response.status==1 ){
+      window.localStorage.setItem('token', response.token);
+      window.location = '/home'; 
+    }else if( response.status==2 ){
+      setSnackType('error');
+      setMessage(response.errorMsg);
+      setIsSnackbarOpen(true);
+    }
+
     // await backendCall.post('/user/login', {
     //   username: username,
     //   password: password,
@@ -152,6 +176,7 @@ export default function Login({ setLoggedIn }) {
       <Snackbar open={isSnackbarOpen} autoHideDuration={4000} onClose={hanldeSnackbarClose}>
         <Alert severity={snackType} onClose={hanldeSnackbarClose}>{message}</Alert>
       </Snackbar>
+      
     </>
 
   );

@@ -1,6 +1,6 @@
 package com.enpm613.algolab.controller;
 
-import com.enpm613.algolab.entity.user.User;
+import com.enpm613.algolab.entity.User;
 import com.enpm613.algolab.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/user")
 @AllArgsConstructor
+@CrossOrigin("http://localhost:3000")
 public class UserController {
     @Autowired
     UserService userService;
@@ -54,5 +55,10 @@ public class UserController {
     @GetMapping("/validate-username")
     public ResponseEntity<Boolean> validateUsername(@RequestParam("username") String username) {
         return ResponseEntity.ok(userService.isValidUsername(username));
+    }
+    @GetMapping("/login")
+    public ResponseEntity<Boolean> login() {
+        System.out.println("login");
+        return ResponseEntity.ok(true);
     }
 }

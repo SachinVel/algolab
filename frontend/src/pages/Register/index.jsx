@@ -17,12 +17,98 @@ export default function Register({ setLoggedIn }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [firstName, setFirstName] = useState('');
-  const [lastname, setLastName] = useState('');
-  const [role, setRole] = useState(null);
+  const [lastName, setLastName] = useState('');
+  const [role, setRole] = useState('');
   const [email, setEmail] = useState('');
   const [bio, setBio] = useState('');
   const [errorMesage, setErrorMessage] = useState('');
   const [isErrSnackbarOpen, setIsErrSnackbarOpen] = useState(false);
+
+  const [errors, setErrors] = useState({
+    password: '',
+    confirmPassword: '',
+    bio: '',
+    email: '',
+    firstName: '',
+    lastName: '',
+    role: ''
+  });
+
+  const validateForm = () => {
+    let valid = true;
+
+    // Validate password
+    if (password.length < 8) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        password: 'Password must be at least 8 characters.'
+      }));
+      valid = false;
+    } else if (!/(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])/.test(password)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        password: 'Password must contain at least one letter, one number, and one special character.'
+      }));
+      valid = false;
+    } else {
+      setErrors((prevErrors) => ({ ...prevErrors, password: '' }));
+    }
+
+    // Validate confirmPassword
+    if (confirmPassword !== password) {
+      setErrors((prevErrors) => ({ ...prevErrors, password: 'Passwords do not match.' }));
+      valid = false;
+    } else {
+      setErrors((prevErrors) => ({ ...prevErrors, password: '' }));
+    }
+
+    // Validate bio
+    if (bio.length > 150) {
+      setErrors((prevErrors) => ({ ...prevErrors, bio: 'Bio should be less than 150 characters.' }));
+      valid = false;
+    } else {
+      setErrors((prevErrors) => ({ ...prevErrors, bio: '' }));
+    }
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrors((prevErrors) => ({ ...prevErrors, email: 'Enter a valid email address.' }));
+      valid = false;
+    } else {
+      setErrors((prevErrors) => ({ ...prevErrors, email: '' }));
+    }
+
+    // Validate firstName and lastName
+    const nameRegex = /^[a-zA-Z]+$/;
+    if (!nameRegex.test(firstName)) {
+      setErrors((prevErrors) => ({ ...prevErrors, firstName: 'Only alphabet characters allowed for first name.' }));
+      valid = false;
+    } else {
+      setErrors((prevErrors) => ({ ...prevErrors, firstName: '' }));
+    }
+
+    if (!nameRegex.test(lastName)) {
+      setErrors((prevErrors) => ({ ...prevErrors, lastName: 'Only alphabet characters allowed for last name.' }));
+      valid = false;
+    } else {
+      setErrors((prevErrors) => ({ ...prevErrors, lastName: '' }));
+    }
+
+    // Validate role
+    const validRoles = ['STUDENT', 'INSTRUCTOR'];
+    if (!validRoles.includes(role)) {
+      setErrors((prevErrors) => ({ ...prevErrors, role: 'Invalid role.' }));
+      valid = false;
+    } else {
+      setErrors((prevErrors) => ({ ...prevErrors, role: '' }));
+    }
+
+    if (!valid) {
+      setIsErrSnackbarOpen(true);
+    }
+    return valid;
+  };
 
   const navigate = useNavigate();
 
@@ -60,26 +146,33 @@ export default function Register({ setLoggedIn }) {
 
   const register = async () => {
 
-    if (password !== confirmPassword) {
-      setErrorMessage('Passwords do not match');
-      setIsErrSnackbarOpen(true);
-      return;
+    if (validateForm()) {
+      await backendCall.post('/user/register',
+        {
+          username: username,
+          password: password,
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          role: role,
+          bio: bio
+        }
+      ).then((res) => {
+        window.localStorage.removeItem('token');
+        setLoggedIn(false);
+        navigate('/login', {
+          state: { isRegisterSuccess: true }
+        });
+      }).catch((err) => {
+        console.log('err : ', err);
+        setErrorMessage(err.response.data.error);
+        setIsErrSnackbarOpen(true);
+      });
+    } else {
+
     }
 
-    await backendCall.post('/user/register', {
-      username: username,
-      password: password,
-    }).then((res) => {
-      window.localStorage.removeItem('token');
-      setLoggedIn(false);
-      navigate('/login', {
-        state: { isRegisterSuccess: true }
-      });
-    }).catch((err) => {
-      console.log('err : ', err);
-      setErrorMessage(err.response.data.error);
-      setIsErrSnackbarOpen(true);
-    });
+
 
   }
 
@@ -118,11 +211,16 @@ export default function Register({ setLoggedIn }) {
               type="text"
               name="lastname"
               sx={{ width: "180px" }}
-              value={lastname}
+              value={lastName}
               onChange={onLastNameChange}
               placeholder="Last Name"
               required
             />
+
+
+
+
+
           </Stack>
           <br />
           <TextField
@@ -179,11 +277,11 @@ export default function Register({ setLoggedIn }) {
             sx={{ width: "400px" }}
             onChange={onRoleChange}
             placeholder='Role'
-            // variant='standard'
+          // variant='standard'
           >
             <MenuItem value="">Select Role</MenuItem>
-            <MenuItem value='instructor'>Instructor</MenuItem>
-            <MenuItem value='student'>Student</MenuItem>
+            <MenuItem value='INSTRUCTOR'>Instructor</MenuItem>
+            <MenuItem value='STUDENT'>Student</MenuItem>
           </Select>
 
           <br /><br />
@@ -192,11 +290,9 @@ export default function Register({ setLoggedIn }) {
             id="standard-basic"
             label="Bio"
             multiline
-            rows={3}
             value={bio}
             onChange={onBioChange}
             sx={{ width: "400px" }}
-            defaultValue=""
             variant="outlined"
             maxRows={10}
           />
@@ -218,8 +314,79 @@ export default function Register({ setLoggedIn }) {
         </Box>
 
       </Box>
-      <Snackbar open={isErrSnackbarOpen} autoHideDuration={4000} onClose={hanldeErrSnackbarClose}>
-        <Alert severity="error" onClose={hanldeErrSnackbarClose}>{errorMesage}</Alert>
+      <Snackbar
+        open={isErrSnackbarOpen}
+        autoHideDuration={4000}
+        onClose={hanldeErrSnackbarClose}
+        disableWindowBlurListener={true}
+      >
+        <Box>
+
+          {
+            errors.firstName &&
+            <>
+              <Alert onClose={hanldeErrSnackbarClose} severity="error">
+                {errors.firstName}
+              </Alert>
+              <br></br>
+            </>
+
+          }
+
+          {
+            errors.lastName &&
+            <>
+              <Alert onClose={hanldeErrSnackbarClose} severity="error">
+                {errors.lastName}
+              </Alert>
+              <br></br>
+            </>
+          }
+
+          {
+            errors.password &&
+            <>
+              <Alert onClose={hanldeErrSnackbarClose} severity="error">
+                {errors.password}
+              </Alert>
+              <br></br>
+            </>
+          }
+
+          {
+            errors.email &&
+            <>
+              <Alert onClose={hanldeErrSnackbarClose} severity="error">
+                {errors.email}
+              </Alert>
+              <br></br>
+            </>
+          }
+
+          {
+            errors.role &&
+            <>
+              <Alert onClose={hanldeErrSnackbarClose} severity="error">
+                {errors.role}
+              </Alert>
+              <br></br>
+            </>
+          }
+
+          {
+            errors.bio &&
+            <>
+              <Alert onClose={hanldeErrSnackbarClose} severity="error">
+                {errors.bio}
+              </Alert>
+              <br></br>
+            </>
+          }
+
+
+
+        </Box>
+
       </Snackbar>
     </>
 

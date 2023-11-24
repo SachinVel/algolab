@@ -1,7 +1,6 @@
 package com.enpm613.algolab.util;
 
-import com.enpm613.algolab.entity.user.Role;
-import com.enpm613.algolab.entity.user.User;
+import com.enpm613.algolab.entity.User;
 import com.enpm613.algolab.repository.UserRepository;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
