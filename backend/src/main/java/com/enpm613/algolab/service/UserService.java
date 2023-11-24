@@ -1,6 +1,6 @@
 package com.enpm613.algolab.service;
 
-import com.enpm613.algolab.entity.user.User;
+import com.enpm613.algolab.entity.User;
 import com.enpm613.algolab.repository.UserRepository;
 import com.enpm613.algolab.util.Validator;
 import org.springframework.beans.factory.annotation.Autowired;

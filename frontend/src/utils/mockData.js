@@ -1,4 +1,4 @@
-const sampleData = {
+export const sampleData = {
     'registerUser' : {
         path : '/user/register',
         method : 'POST',
@@ -32,5 +32,18 @@ const sampleData = {
     'validateUserName' : {
         path : '/validate-username?username=anuragKumar',
         method : 'GET'
+    },
+    'login' : {
+        path : '/login',
+        method  : 'post',
+        requestBody : {
+            username : 'sachin',
+            password : '{hashedPassword}' //https://medium.com/boca-code/how-to-encrypt-password-in-your-react-app-before-you-send-it-to-the-api-6e10a06f0a8e
+        },
+        response :{
+            status : '1', //1=success, 2=error
+            token : '13sdfxcv3', //this token should have expiry date and userId mapping. FrontEnd will send this token in all other request. Backend should get userId from this token
+            errorMsg : 'incorrect credentials', //use this message if status==2
+        }
     }
 }
