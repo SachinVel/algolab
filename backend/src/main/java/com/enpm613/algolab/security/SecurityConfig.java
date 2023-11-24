@@ -1,23 +1,31 @@
 package com.enpm613.algolab.security;
 
+import com.enpm613.algolab.filter.JwtAuthFilter;
+import com.enpm613.algolab.service.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
+
+    @Autowired
+    JwtAuthFilter jwtAuthFilter;
 
     public static final String[] ENDPOINTS_WHITELIST = {
             "/css/**",
@@ -33,37 +41,45 @@ public class SecurityConfig {
     public static final String PASSWORD = "password";
 
     @Bean
-    public static PasswordEncoder passwordEncoder() {
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsServiceImpl();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService());
+        authenticationProvider.setPasswordEncoder(bCryptPasswordEncoder());
+        return authenticationProvider;
+
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public SecurityFilterChain filterSecurity(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .authorizeHttpRequests((authorize) ->
-                        authorize.anyRequest().authenticated()
-                ).formLogin(
-                        form -> form
-                                .loginPage(LOGIN_URL)
-                                .loginProcessingUrl(LOGIN_URL)
-                                .failureUrl(LOGIN_FAIL_URL)
-                                .usernameParameter(USERNAME)
-                                .passwordParameter(PASSWORD)
-                                .defaultSuccessUrl(DEFAULT_SUCCESS_URL)
-                ).logout(
-                        logout -> logout
-                                .logoutUrl("/logout")
-                                .invalidateHttpSession(true)
-                                .deleteCookies("JSESSIONID")
-                                .logoutSuccessUrl(LOGIN_URL + "?logout")
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-                        .invalidSessionUrl("/invalidSession")
-                        .maximumSessions(1)
-                        .maxSessionsPreventsLogin(true));
-        ;
-        return http.build();
+
+        return http.csrf().disable()
+                .cors(Customizer.withDefaults())
+                .authorizeHttpRequests()
+                .requestMatchers("/api/v1/login").permitAll()
+                .and()
+                .authorizeHttpRequests().requestMatchers("/api/v1/**")
+                .authenticated()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).build();
     }
 
 }
