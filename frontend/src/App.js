@@ -9,7 +9,7 @@ import React, { lazy, Suspense, useEffect, useState } from "react";
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Logout = lazy(() => import("./pages/Logout"));
-const Home = lazy(() => import("./pages/Home"));
+const Course = lazy(() => import("./pages/Course"));
 
 function App() {
 
@@ -36,15 +36,13 @@ function App() {
               <CircularProgress sx={{ margin: "auto" }} />
             </Box>
           }>
-          <Box>
-            <Routes>
-            <Route path="/" exact element={loggedIn ? <Navigate to='/home' state={{ isLoggedIn: true }} /> : <Navigate to='/login' state={{ showLoginNecessary: true }} />} />
-              <Route path="/login" exact element={loggedIn ? <Navigate to='/home' state={{ isLoggedIn: true }} /> : <Login setLoggedIn={setLoggedIn} />} />
-              <Route path="/register" element={<Register setLoggedIn={setLoggedIn}/>} />
-              <Route path="/logout" element={<Logout setLoggedIn={setLoggedIn}/>} />
-              <Route path="/home" element={loggedIn ?  <Home /> : <Navigate to='/login' state={{ showLoginNecessary: true }} />} />
-            </Routes>
-          </Box>
+          <Routes>
+            <Route path="/" exact element={loggedIn ? <Navigate to='/course' state={{ isLoggedIn: true }} /> : <Navigate to='/login' state={{ showLoginNecessary: true }} />} />
+            <Route path="/login" exact element={loggedIn ? <Navigate to='/course' state={{ isLoggedIn: true }} /> : <Login setLoggedIn={setLoggedIn} />} />
+            <Route path="/register" element={<Register setLoggedIn={setLoggedIn} />} />
+            <Route path="/logout" element={<Logout setLoggedIn={setLoggedIn} />} />
+            <Route path="/course" element={loggedIn ? <Course /> : <Navigate to='/login' state={{ showLoginNecessary: true }} />} />
+          </Routes>
         </Suspense>
       </BrowserRouter>
     </>
