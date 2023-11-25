@@ -4,9 +4,6 @@ import { Button, TextField, Link, Box, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Snackbar from '@mui/material/Snackbar';
-import { sampleData } from "../../utils/mockData";
-
-import bcrypt from 'bcryptjs';
 import { backendCall } from '../../utils/network';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -16,7 +13,6 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 // const salt = bcrypt.genSaltSync(10)
 // console.log('salt : ',salt);
 const salt = process.env.REACT_APP_SALT;
-console.log(salt)
 
 export default function Login({ setLoggedIn }) {
 
@@ -29,10 +25,6 @@ export default function Login({ setLoggedIn }) {
 
   const location = useLocation();
   const navigate = useNavigate();
-
-
-
-
 
   const onUsernameChange = (event) => {
     setUserName(event.target.value);
@@ -56,7 +48,7 @@ export default function Login({ setLoggedIn }) {
       window.localStorage.setItem('token', res.data.token);
       window.localStorage.setItem('role', res.data.role);
       setLoggedIn(true);
-      navigate('/home', {
+      navigate('/course', {
         state: {
           isLoginSuccessful: true
         }
