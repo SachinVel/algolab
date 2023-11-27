@@ -21,4 +21,11 @@ public class LessonContent {
 
     private String mediaLink;
 
+    public boolean isEmpty() {
+        // Check if all relevant properties are null or empty
+        return lessonContentId == null &&
+                (lessonPageId == null || data==null);
+
+    }
+
 }

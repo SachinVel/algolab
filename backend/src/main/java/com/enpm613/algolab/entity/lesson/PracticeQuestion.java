@@ -18,5 +18,11 @@ public class PracticeQuestion {
 
     private String answerContent;
 
+    public boolean isEmpty() {
+        // Check if all relevant properties are null or empty
+        return practiceQuestionId == null;
+
+    }
+
 
 }

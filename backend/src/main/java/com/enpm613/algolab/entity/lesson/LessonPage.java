@@ -22,5 +22,13 @@ public class LessonPage {
 
     private Long estimatedCompletionTime;
 
+    public boolean isEmpty() {
+        // Check if all relevant properties are null or empty
+        return id == null &&
+                (title == null || title.trim().isEmpty()) &&
+                (courseId == null || contents.isEmpty() || estimatedCompletionTime==null);
+        // Add more properties as needed
+    }
+
 
 }
