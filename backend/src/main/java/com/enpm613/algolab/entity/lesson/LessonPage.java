@@ -30,5 +30,43 @@ public class LessonPage {
         // Add more properties as needed
     }
 
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public List<LessonContent> getContents() {
+        return contents;
+    }
+
+    public void setContents(List<LessonContent> contents) {
+        this.contents = contents;
+    }
+
+    public Long getEstimatedCompletionTime() {
+        return estimatedCompletionTime;
+    }
+
+    public void setEstimatedCompletionTime(Long estimatedCompletionTime) {
+        this.estimatedCompletionTime = estimatedCompletionTime;
+    }
 }

@@ -24,5 +24,35 @@ public class PracticeQuestion {
 
     }
 
+    public Long getPracticeQuestionId() {
+        return practiceQuestionId;
+    }
 
+    public void setPracticeQuestionId(Long practiceQuestionId) {
+        this.practiceQuestionId = practiceQuestionId;
+    }
+
+    public String getQuestionDifficulty() {
+        return questionDifficulty;
+    }
+
+    public void setQuestionDifficulty(String questionDifficulty) {
+        this.questionDifficulty = questionDifficulty;
+    }
+
+    public String getQuestionContent() {
+        return questionContent;
+    }
+
+    public void setQuestionContent(String questionContent) {
+        this.questionContent = questionContent;
+    }
+
+    public String getAnswerContent() {
+        return answerContent;
+    }
+
+    public void setAnswerContent(String answerContent) {
+        this.answerContent = answerContent;
+    }
 }

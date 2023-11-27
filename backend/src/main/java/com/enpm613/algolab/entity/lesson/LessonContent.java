@@ -28,4 +28,43 @@ public class LessonContent {
 
     }
 
+    public Long getLessonContentId() {
+        return lessonContentId;
+    }
+
+    public void setLessonContentId(Long lessonContentId) {
+        this.lessonContentId = lessonContentId;
+    }
+
+    public Long getLessonPageId() {
+        return lessonPageId;
+    }
+
+    public void setLessonPageId(Long lessonPageId) {
+        this.lessonPageId = lessonPageId;
+    }
+
+    public byte[] getData() {
+        return data;
+    }
+
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    public List<PracticeQuestion> getPracticeQuestions() {
+        return practiceQuestions;
+    }
+
+    public void setPracticeQuestions(List<PracticeQuestion> practiceQuestions) {
+        this.practiceQuestions = practiceQuestions;
+    }
+
+    public String getMediaLink() {
+        return mediaLink;
+    }
+
+    public void setMediaLink(String mediaLink) {
+        this.mediaLink = mediaLink;
+    }
 }
