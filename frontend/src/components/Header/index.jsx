@@ -13,8 +13,7 @@ import BugReportIcon from '@mui/icons-material/BugReport';
 import CircleNotificationsIcon from '@mui/icons-material/CircleNotifications';
 import MuiToggleButton from "@mui/material/ToggleButton";
 import { useLocation } from 'react-router-dom';
-
-
+import Person2Icon from '@mui/icons-material/Person2';
 
 export default function Header() {
 
@@ -26,9 +25,8 @@ export default function Header() {
     });
     const location = useLocation();
 
-
-
     const [menu, setMenu] = useState('courses');
+
 
     const logout = () => {
         window.localStorage.removeItem('token');
@@ -37,7 +35,7 @@ export default function Header() {
     }
 
     const handleMenuChange = (event) => {
-        window.location=`/${event.target.value}`
+        window.location = `/${event.target.value}`
     };
 
     useEffect(() => {
@@ -67,6 +65,9 @@ export default function Header() {
                     </ToggleButton>
                     <ToggleButton value="announcement" aria-label="justified">
                         <CircleNotificationsIcon /> Announcement
+                    </ToggleButton>
+                    <ToggleButton value="profile" aria-label="justified">
+                        <Person2Icon /> Profile
                     </ToggleButton>
                 </ToggleButtonGroup>
             </Stack>
