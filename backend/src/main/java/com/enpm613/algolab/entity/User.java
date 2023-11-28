@@ -1,4 +1,4 @@
-package com.enpm613.algolab.entity.user;
+package com.enpm613.algolab.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

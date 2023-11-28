@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Button, TextField, Link, Box, Typography } from '@mui/material';
 
-import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Snackbar from '@mui/material/Snackbar';
+import backendCall  from '../../utils/network';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
+// const salt = bcrypt.genSaltSync(10)
+// console.log('salt : ',salt);
+const salt = process.env.REACT_APP_SALT;
 
 export default function Login({ setLoggedIn }) {
 
@@ -22,7 +26,6 @@ export default function Login({ setLoggedIn }) {
   const location = useLocation();
   const navigate = useNavigate();
 
-
   const onUsernameChange = (event) => {
     setUserName(event.target.value);
   }
@@ -33,28 +36,44 @@ export default function Login({ setLoggedIn }) {
 
   const login = async (event) => {
     event.preventDefault();
-    // await backendCall.post('/user/login', {
-    //   username: username,
-    //   password: password,
-    // }).then((res) => {
-    //   console.log('login response : ', res);
-    //   // window.localStorage.setItem('token', res.data.token);
-    //   window.localStorage.setItem('token', res.data.token);
-    //   setLoggedIn(true);
-    //   navigate('/outing', {
-    //     state: {
-    //       isLoginSuccessful: true
-    //     }
-    //   });
-    //   // window.location = '/outing';
-    // }).catch((err) => {
-    //   console.log('login error : ', err);
-    //   if (err.response && err.response.data && err.response.data.error) {
-    //     setMessage(err.response.data.error);
-    //     setSnackType('error');
-    //     setIsSnackbarOpen(true);
-    //   }
-    // });
+    console.log(salt);
+    // const hashedPassword = bcrypt.hashSync(password, salt);
+
+    await backendCall.post('/api/v1/login', {
+      username: username,
+      password: password,
+    }).then((res) => {
+      console.log('login response : ', res);
+      // window.localStorage.setItem('token', res.data.token);
+      window.localStorage.setItem('token', res.data.token);
+      window.localStorage.setItem('role', res.data.role);
+      setLoggedIn(true);
+      navigate('/course', {
+        state: {
+          isLoginSuccessful: true
+        }
+      });
+      // window.location = '/outing';
+    }).catch((err) => {
+      console.log('login error : ', err);
+      if (err.response && err.response.data && err.response.data.error) {
+        setMessage(err.response.data.error);
+        setSnackType('error');
+        setIsSnackbarOpen(true);
+      }
+    });
+    // let response = sampleData['login'].response;
+
+    // if (response.status == 1) {
+    //   window.localStorage.setItem('token', response.token);
+    //   window.location = '/home';
+    // } else if (response.status == 2) {
+    //   setSnackType('error');
+    //   setMessage(response.errorMsg);
+    //   setIsSnackbarOpen(true);
+    // }
+
+
   }
 
   const hanldeSnackbarClose = () => {
@@ -152,6 +171,7 @@ export default function Login({ setLoggedIn }) {
       <Snackbar open={isSnackbarOpen} autoHideDuration={4000} onClose={hanldeSnackbarClose}>
         <Alert severity={snackType} onClose={hanldeSnackbarClose}>{message}</Alert>
       </Snackbar>
+
     </>
 
   );
