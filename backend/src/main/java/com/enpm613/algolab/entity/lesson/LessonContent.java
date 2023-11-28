@@ -15,7 +15,7 @@ public class LessonContent {
 
     private Long lessonPageId;
 
-    private byte[] data;
+    private String data;
 
     private List<PracticeQuestion> practiceQuestions;
 
@@ -44,11 +44,11 @@ public class LessonContent {
         this.lessonPageId = lessonPageId;
     }
 
-    public byte[] getData() {
+    public String getData() {
         return data;
     }
 
-    public void setData(byte[] data) {
+    public void setData(String data) {
         this.data = data;
     }
 
