@@ -4,7 +4,7 @@ import { Button, TextField, Link, Box, Typography } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Snackbar from '@mui/material/Snackbar';
-import { backendCall } from '../../utils/network';
+import backendCall  from '../../utils/network';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;

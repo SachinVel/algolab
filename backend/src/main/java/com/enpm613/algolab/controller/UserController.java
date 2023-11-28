@@ -1,5 +1,6 @@
 package com.enpm613.algolab.controller;
 
+import com.enpm613.algolab.entity.CustomUserDetails;
 import com.enpm613.algolab.entity.User;
 import com.enpm613.algolab.entity.AuthRequest;
 import com.enpm613.algolab.entity.LoginResponse;
@@ -10,10 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,7 +30,7 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -32,10 +38,33 @@ public class UserController {
     @Autowired
     JWTService jwtService;
 
-    @GetMapping("/get/{userId}")
-    public ResponseEntity<Object> getUser(@PathVariable("userId") String userId) {
+    @GetMapping("/userDetails")
+    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','STUDENT','ADMIN')")
+    public ResponseEntity<Object> getUser(@AuthenticationPrincipal UserDetails user) {
         try {
-            return ResponseEntity.ok(userService.getUser(userId));
+            String curUsername = user.getUsername();
+            return ResponseEntity.ok(userService.getUserByUsername(curUsername));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/userDetails")
+    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','STUDENT','ADMIN')")
+    public ResponseEntity<Object> UpdateUser(@AuthenticationPrincipal UserDetails user, @RequestBody User updatedUser) {
+        try {
+            String curUsername = user.getUsername();
+            User curUser = userService.getUserByUsername(curUsername);
+
+//            System.out.println("IDS : "+curUser.getId()+" "+updatedUser.getId());
+            if( !curUser.getId().equals(updatedUser.getId()) ){
+                return ResponseEntity.badRequest().build();
+            }
+            userService.updateUser(updatedUser);
+            UserDetails updatedUserDetails = new CustomUserDetails(updatedUser);
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(updatedUserDetails, null, updatedUserDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            return ResponseEntity.ok(jwtService.GenerateToken(updatedUser.getUsername()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
@@ -50,16 +79,8 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<Object> updateUser(@RequestBody User user) {
-        try {
-            return ResponseEntity.ok(userService.updateUser(user));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/delete/{userId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @DeleteMapping("/delete")
     public ResponseEntity<Object> deleteUser(@PathVariable("userId") String userId) {
         try {
             userService.deleteUser(userId);

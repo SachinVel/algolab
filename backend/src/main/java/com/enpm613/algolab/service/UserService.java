@@ -3,19 +3,25 @@ package com.enpm613.algolab.service;
 import com.enpm613.algolab.entity.User;
 import com.enpm613.algolab.repository.UserRepository;
 import com.enpm613.algolab.util.Validator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     @Autowired
     Validator validator;
 
     @Autowired
     UserRepository userRepository;
+
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -45,21 +51,27 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(User updatedUser) {
-        User existingUser = userRepository.findById(updatedUser.getId())
-                .orElseThrow(() -> new RuntimeException("User not found."));
+    public void updateUser(User updatedUser) {
+        Optional<User> newUser = userRepository.findByUsername(updatedUser.getUsername());
 
         // Check if the updated username is valid and not taken by another user
-        if (!existingUser.getUsername().equals(updatedUser.getUsername()) &&
+        if (newUser.isPresent() && !newUser.get().getId().equals(updatedUser.getId()) &&
                 !validator.validateUsername(updatedUser.getUsername())) {
             throw new RuntimeException("Username already exists.");
         }
 
-        if (!validator.validatePassword(updatedUser.getPassword())) {
-            throw new RuntimeException("Password is not strong enough.");
+
+
+        if( !updatedUser.getPassword().startsWith("$2a$") ){
+            if (!validator.validatePassword(updatedUser.getPassword())) {
+                throw new RuntimeException("Password is not strong enough.");
+            }
+            updatedUser.setPassword(bCryptPasswordEncoder.encode(updatedUser.getPassword()));
         }
 
-        return userRepository.save(updatedUser);
+        userRepository.save(updatedUser);
+//        userRepositoryCustom.updateUser(updatedUser);
+
     }
 
     public void deleteUser(String userId) {
