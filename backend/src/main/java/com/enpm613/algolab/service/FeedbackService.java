@@ -19,6 +19,10 @@ public class FeedbackService {
     public List<Feedback> viewFeedback(){
         return feedbackRepository.findAll();
     }
+
+    public List<Feedback> viewFeedbackByCourse(String courseId){
+        return feedbackRepository.findByCourse(courseId);
+    }
     
 //    public static List<Course> viewCourses(){
 //

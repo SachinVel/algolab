@@ -11,33 +11,33 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 public class Feedback {
 
-    private String user;
-    private String course;
-    private String instructor;
+    private String userId;
+    private String courseId;
+    private String instructorId;
     private String content;
 
     public String getUser() {
-        return user;
+        return userId;
     }
 
     public void setUser(String user) {
-        this.user = user;
+        this.userId = userId;
     }
 
-    public String getCourse() {
-        return course;
+    public String getCourseId() {
+        return courseId;
     }
 
-    public void setCourse(String course) {
-        this.course = course;
+    public void setCourseId(String course) {
+        this.courseId = courseId;
     }
 
-    public String getInstructor() {
-        return instructor;
+    public String getInstructorId() {
+        return instructorId;
     }
 
-    public void setInstructor(String instructor) {
-        this.instructor = instructor;
+    public void setInstructorId(String instructorId) {
+        this.instructorId = instructorId;
     }
 
     public String getContent() {
