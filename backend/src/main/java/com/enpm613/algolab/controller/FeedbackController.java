@@ -32,7 +32,7 @@ public class FeedbackController {
     @PostMapping("/add")
     @PreAuthorize("hasAnyAuthority('STUDENT')")
     @ResponseBody
-    public ResponseEntity<Feedback> addFeedback(@RequestBody Feedback feedback){
+    public ResponseEntity<Feedback> addFeedback(@AuthenticationPrincipal UserDetails user, @RequestBody Feedback feedback){
         Feedback savedFeedback = feedbackService.addFeedback(feedback);
         return ResponseEntity.ok(savedFeedback);
     }
@@ -40,7 +40,7 @@ public class FeedbackController {
     @GetMapping("/viewAll")
     @PreAuthorize("hasAnyAuthority('INSTRUCTOR','STUDENT','ADMIN')")
     @ResponseBody
-    public ResponseEntity<List<Feedback>> getAllFeedback() {
+    public ResponseEntity<List<Feedback>> getAllFeedback(@AuthenticationPrincipal UserDetails user) {
         List<Feedback> feedbackList = feedbackService.viewFeedback();
         return ResponseEntity.ok(feedbackList);
     }
