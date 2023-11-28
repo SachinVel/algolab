@@ -17,10 +17,9 @@ public class HomeController {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @GetMapping("/getusers")
-    @PreAuthorize("hasAuthority('INSTRUCTOR')")
+    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','STUDENT')")
     public ResponseEntity<Object> getUser() {
-
-        //It's a sample request to
+        //It's a sample request to 
         logger.debug("Inside getUsers");
         return ResponseEntity.ok("true");
     }

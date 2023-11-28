@@ -3,7 +3,7 @@ import { Button, TextField, Link, Typography, Box, TextareaAutosize, Stack, Inpu
 
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import { backendCall } from "../../utils/network";
+import backendCall from "../../utils/network";
 import { useNavigate } from 'react-router-dom';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
