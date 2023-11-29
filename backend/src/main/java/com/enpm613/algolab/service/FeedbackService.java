@@ -1,6 +1,7 @@
 package com.enpm613.algolab.service;
 
 import com.enpm613.algolab.entity.Feedback;
+import com.enpm613.algolab.entity.User;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
 import com.enpm613.algolab.repository.FeedbackRepository;
@@ -12,8 +13,9 @@ public class FeedbackService {
     @Autowired
     private FeedbackRepository feedbackRepository;
 
-    public Feedback addFeedback(Feedback feedback){
-            return feedbackRepository.save(feedback);
+    public Feedback addFeedback(Feedback feedback, User user, String courseId){
+            Feedback newFeedback = new Feedback(user,courseId, feedback.getInstructorId(), feedback.getContent());
+            return feedbackRepository.save(newFeedback);
     }
     
     public List<Feedback> viewFeedback(){

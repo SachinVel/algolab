@@ -11,17 +11,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 public class Feedback {
 
-    private String userId;
+    private User user;
     private String courseId;
     private String instructorId;
     private String content;
 
-    public String getUser() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUser(String user) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getCourseId() {
