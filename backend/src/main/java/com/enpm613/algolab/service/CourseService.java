@@ -24,8 +24,8 @@ public class CourseService {
     @Autowired
     CourseRepository courseRepository;
 
-    @Autowired
-    CourseInstructorMappingRepository courseMapRepository;
+//    @Autowired
+//    CourseInstructorMappingRepository courseMapRepository;
 
     private final MongoTemplate mongoTemplate;
 
