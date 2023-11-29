@@ -1,6 +1,5 @@
 package com.enpm613.algolab.service;
 
-import com.enpm613.algolab.entity.User;
 import com.enpm613.algolab.entity.lesson.LessonPage;
 import com.enpm613.algolab.entity.lesson.LessonContent;
 import com.enpm613.algolab.entity.lesson.PracticeQuestion;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LessonService {
@@ -183,4 +181,29 @@ public class LessonService {
                 .orElseThrow(() -> new RuntimeException("Lesson Content not found."));
         practiceQuestionRepository.delete(existingPracticeQuestion);
     }
+
+    public LessonPage getLessonContent(Long lessonId){
+
+        return lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new RuntimeException("LessonContent not found"));
+
+    }
+
+
+    public List<LessonPage> getLessonPages(Long courseId)
+    {
+        List<LessonPage> lessonPages = lessonRepository.findByCourseId(courseId);
+
+        if(lessonPages.isEmpty())
+        {
+            return null;
+        }
+        else
+        {
+            return lessonPages;
+        }
+    }
+
+
+
 }

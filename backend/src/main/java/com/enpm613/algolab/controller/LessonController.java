@@ -107,6 +107,27 @@ public class LessonController {
         }
     }
 
+    @GetMapping("/getLessonContent/{lessonId}")
+    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','STUDENT')")
+    public ResponseEntity<Object> getLessonContent(@PathVariable("lessonId") Long id) {
+        try {
+            logger.debug("Inside get+++");
+            return ResponseEntity.ok(lessonService.getLessonContent(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/getLessonPages/{courseId}")
+    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','STUDENT')")
+    public ResponseEntity<Object> getLessonPage(@PathVariable("courseId") Long id) {
+        try {
+            logger.debug("Inside get+++");
+            return ResponseEntity.ok(lessonService.getLessonPages(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
 
 
 }
