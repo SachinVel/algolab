@@ -5,9 +5,9 @@ import org.springframework.data.mongodb.repository.Query;
 
 import java.util.Optional;
 
-public interface LessonContentRepository extends MongoRepository<LessonContent, Long> {
+public interface LessonContentRepository extends MongoRepository<LessonContent, String> {
 
     @Query("{id: ?0}")
-    Optional<LessonContent> findById(Long id);
+    Optional<LessonContent> findById(String id);
 }
 

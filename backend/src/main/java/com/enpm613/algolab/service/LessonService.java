@@ -64,61 +64,61 @@ public class LessonService {
     public LessonPage updateLesson(LessonPage updatedLessonPage) {
         String lessonPageId = updatedLessonPage.getId();
 
-        if (lessonRepository.existsById(lessonPageId)) {
-            // Update LessonPage
-            LessonPage existingLessonPage = lessonRepository.findById(lessonPageId).orElse(null);
-            if (existingLessonPage != null) {
-                existingLessonPage.setTitle(updatedLessonPage.getTitle());
-                existingLessonPage.setCourseId(updatedLessonPage.getCourseId());
-                existingLessonPage.setEstimatedCompletionTime(updatedLessonPage.getEstimatedCompletionTime());
-
-                // Update LessonContents
-                List<LessonContent> updatedLessonContents = updatedLessonPage.getContents();
-                List<LessonContent> existingLessonContents = existingLessonPage.getContents();
-
-                for (LessonContent updatedLessonContent : updatedLessonContents) {
-                    Long lessonContentId = updatedLessonContent.getLessonContentId();
-                    LessonContent existingLessonContent = existingLessonContents.stream()
-                            .filter(content -> content.getLessonContentId().equals(lessonContentId))
-                            .findFirst()
-                            .orElse(null);
-
-                    if (existingLessonContent != null) {
-                        existingLessonContent.setData(updatedLessonContent.getData());
-                        existingLessonContent.setMediaLink(updatedLessonContent.getMediaLink());
-
-                        // Update PracticeQuestions
-                        List<PracticeQuestion> updatedPracticeQuestions = updatedLessonContent.getPracticeQuestions();
-                        List<PracticeQuestion> existingPracticeQuestions = existingLessonContent.getPracticeQuestions();
-
-                        for (PracticeQuestion updatedPracticeQuestion : updatedPracticeQuestions) {
-                            Long practiceQuestionId = updatedPracticeQuestion.getPracticeQuestionId();
-                            PracticeQuestion existingPracticeQuestion = existingPracticeQuestions.stream()
-                                    .filter(question -> question.getPracticeQuestionId().equals(practiceQuestionId))
-                                    .findFirst()
-                                    .orElse(null);
-
-                            if (existingPracticeQuestion != null) {
-                                existingPracticeQuestion.setQuestionDifficulty(updatedPracticeQuestion.getQuestionDifficulty());
-                                existingPracticeQuestion.setQuestionContent(updatedPracticeQuestion.getQuestionContent());
-                                existingPracticeQuestion.setAnswerContent(updatedPracticeQuestion.getAnswerContent());
-                            } else {
-                                // Handle new PracticeQuestion if needed
-                                existingPracticeQuestions.add(practiceQuestionRepository.save(updatedPracticeQuestion));
-                            }
-                        }
-                    } else {
-                        // Handle new LessonContent if needed
-                        existingLessonContents.add(lessonContentRepository.save(updatedLessonContent));
-                    }
-                }
-                // Save the updated hierarchy
-                return lessonRepository.save(existingLessonPage);
-            }
-        }
+//        if (lessonRepository.existsById(lessonPageId)) {
+//            // Update LessonPage
+//            LessonPage existingLessonPage = lessonRepository.findById(lessonPageId).orElse(null);
+//            if (existingLessonPage != null) {
+//                existingLessonPage.setTitle(updatedLessonPage.getTitle());
+//                existingLessonPage.setCourseId(updatedLessonPage.getCourseId());
+//                existingLessonPage.setEstimatedCompletionTime(updatedLessonPage.getEstimatedCompletionTime());
+//
+//                // Update LessonContents
+//                List<LessonContent> updatedLessonContents = updatedLessonPage.getContents();
+//                List<LessonContent> existingLessonContents = existingLessonPage.getContents();
+//
+//                for (LessonContent updatedLessonContent : updatedLessonContents) {
+//                    String lessonContentId = updatedLessonContent.getId();
+//                    LessonContent existingLessonContent = existingLessonContents.stream()
+//                            .filter(content -> content.getId().equals(lessonContentId))
+//                            .findFirst()
+//                            .orElse(null);
+//
+//                    if (existingLessonContent != null) {
+//                        existingLessonContent.setData(updatedLessonContent.getData());
+//                        existingLessonContent.setMediaLink(updatedLessonContent.getMediaLink());
+//
+//                        // Update PracticeQuestions
+//                        List<PracticeQuestion> updatedPracticeQuestions = updatedLessonContent.getPracticeQuestions();
+//                        List<PracticeQuestion> existingPracticeQuestions = existingLessonContent.getPracticeQuestions();
+//
+//                        for (PracticeQuestion updatedPracticeQuestion : updatedPracticeQuestions) {
+//                            String practiceQuestionId = updatedPracticeQuestion.getId();
+//                            PracticeQuestion existingPracticeQuestion = existingPracticeQuestions.stream()
+//                                    .filter(question -> question.getId().equals(practiceQuestionId))
+//                                    .findFirst()
+//                                    .orElse(null);
+//
+//                            if (existingPracticeQuestion != null) {
+//                                existingPracticeQuestion.setQuestionDifficulty(updatedPracticeQuestion.getQuestionDifficulty());
+//                                existingPracticeQuestion.setQuestionName(updatedPracticeQuestion.getQuestionName());
+//                                existingPracticeQuestion.setAnswerContent(updatedPracticeQuestion.getAnswerContent());
+//                            } else {
+//                                // Handle new PracticeQuestion if needed
+//                                existingPracticeQuestions.add(practiceQuestionRepository.save(updatedPracticeQuestion));
+//                            }
+//                        }
+//                    } else {
+//                        // Handle new LessonContent if needed
+//                        existingLessonContents.add(lessonContentRepository.save(updatedLessonContent));
+//                    }
+//                }
+//                // Save the updated hierarchy
+//                return lessonRepository.save(existingLessonPage);
+//            }
+//        }
 
         // Return null if the lessonPage doesn't exist
-        return null;
+        return lessonRepository.save(updatedLessonPage);
     }
 
 
@@ -126,12 +126,12 @@ public class LessonService {
         LessonPage existingLesson = lessonRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lesson not found."));
 
-        List<LessonContent> lessonContents = existingLesson.getContents();
-        for(LessonContent lessonContent : lessonContents)
-        {
-            practiceQuestionRepository.deleteAll(lessonContent.getPracticeQuestions());
-        }
-        lessonContentRepository.deleteAll(lessonContents);
+//        List<LessonContent> lessonContents = existingLesson.getContents();
+//        for(LessonContent lessonContent : lessonContents)
+//        {
+//            practiceQuestionRepository.deleteAll(lessonContent.getPracticeQuestions());
+//        }
+//        lessonContentRepository.deleteAll(lessonContents);
         lessonRepository.delete(existingLesson);
     }
 
@@ -164,7 +164,7 @@ public class LessonService {
         return practiceQuestionRepository.save(practiceQuestion);
     }
 
-    public PracticeQuestion getPracticeQuestion(Long id) {
+    public PracticeQuestion getPracticeQuestion(String id) {
 
         return practiceQuestionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lesson not found."));
@@ -174,7 +174,7 @@ public class LessonService {
         return practiceQuestionRepository.save(practiceQuestion);
     }
 
-    public void deletePracticeQuestion(Long id) {
+    public void deletePracticeQuestion(String id) {
 
 
         PracticeQuestion existingPracticeQuestion = practiceQuestionRepository.findById(id)

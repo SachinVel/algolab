@@ -22,9 +22,9 @@ public class LessonController {
     LessonService lessonService;
     private static final Logger logger = LoggerFactory.getLogger(LessonService.class);
 
-    @GetMapping("/getLesson/{lessonId}")
-    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','STUDENT')")
-    public ResponseEntity<Object> getLesson(@PathVariable("lessonId") String id) {
+    @GetMapping("/getLesson")
+    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','STUDENT','ADMIN')")
+    public ResponseEntity<Object> getLesson(@RequestParam("lessonId") String id) {
         try {
             logger.debug("Inside get+++");
             return ResponseEntity.ok(lessonService.getLesson(id));
@@ -34,7 +34,7 @@ public class LessonController {
     }
 
     @PostMapping("/createLesson")
-    @PreAuthorize("hasAuthority('INSTRUCTOR')")
+    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','ADMIN')")
     public ResponseEntity<Object> createLesson(@RequestBody LessonPage lessonPage) {
         try {
             return ResponseEntity.ok(lessonService.createLesson(lessonPage));
@@ -44,7 +44,7 @@ public class LessonController {
     }
 
     @PutMapping("/updateLesson")
-    @PreAuthorize("hasAuthority('INSTRUCTOR')")
+    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','ADMIN')")
     public ResponseEntity<Object> updateLesson(@RequestBody LessonPage lessonPage) {
         try {
             return ResponseEntity.ok(lessonService.updateLesson(lessonPage));
@@ -53,9 +53,9 @@ public class LessonController {
         }
     }
 
-    @DeleteMapping("/deleteLesson/{lessonId}")
-    @PreAuthorize("hasAuthority('INSTRUCTOR')")
-    public ResponseEntity<Object> deleteLesson(@PathVariable("lessonId") String id) {
+    @DeleteMapping("/deleteLesson")
+    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','ADMIN')")
+    public ResponseEntity<Object> deleteLesson(@RequestParam("lessonId") String id) {
         try {
             lessonService.deleteLesson(id);
             return ResponseEntity.ok("Lesson deleted successfully.");
@@ -107,7 +107,7 @@ public class LessonController {
 //    }
 
     @GetMapping("/getLessonContent/{lessonId}")
-    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','STUDENT')")
+    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','STUDENT','ADMIN')")
     public ResponseEntity<Object> getLessonContent(@PathVariable("lessonId") String id) {
         try {
             logger.debug("Inside get+++");

@@ -10,49 +10,21 @@ import org.springframework.data.annotation.Id;
 @Data
 public class PracticeQuestion {
     @Id
-    private Long practiceQuestionId;
+    private String id;
 
     private String questionDifficulty;
 
-    private String questionContent;
+    private String questionName;
+
+    private String questionLink;
 
     private String answerContent;
 
     public boolean isEmpty() {
         // Check if all relevant properties are null or empty
-        return practiceQuestionId == null;
+        return questionName.isEmpty();
 
     }
 
-    public Long getPracticeQuestionId() {
-        return practiceQuestionId;
-    }
 
-    public void setPracticeQuestionId(Long practiceQuestionId) {
-        this.practiceQuestionId = practiceQuestionId;
-    }
-
-    public String getQuestionDifficulty() {
-        return questionDifficulty;
-    }
-
-    public void setQuestionDifficulty(String questionDifficulty) {
-        this.questionDifficulty = questionDifficulty;
-    }
-
-    public String getQuestionContent() {
-        return questionContent;
-    }
-
-    public void setQuestionContent(String questionContent) {
-        this.questionContent = questionContent;
-    }
-
-    public String getAnswerContent() {
-        return answerContent;
-    }
-
-    public void setAnswerContent(String answerContent) {
-        this.answerContent = answerContent;
-    }
 }
