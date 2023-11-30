@@ -89,7 +89,6 @@ export default function Feedback({}) {
             console.log('getUserDetails response : ', res);
             let userData = res.data;
             setInstructorUsername(userData.username);
-            console.log("instructorUsername: " + userData.username);
             getFeedbackByInstructor(token, userData.username);
         }).catch((err) => {
             console.log('login error : ', err);
@@ -159,7 +158,13 @@ export default function Feedback({}) {
         e.preventDefault();
         console.log('Feedback submitted: ', feedback);
         console.log("courseId: " + courseId);
-        submitFeedback(token).then(() => {setSubmitted(true)});
+        submitFeedback(token).then(() => {
+            setSubmitted(true);
+            setFeedback('');
+            setMessage("Feedback successfully submitted");
+            setSnackType('success');
+            setIsSnackbarOpen(true);
+        });
     };
 
     const submitFeedback = async (token) => {
@@ -174,8 +179,6 @@ export default function Feedback({}) {
         }, config)
             .then((res) => {
                 console.log('submitFeedback response : ', res);
-                let coursesData = res.data;
-                setAllCourses(coursesData);
             }).catch((err) => {
                 console.log('login error : ', err);
                 if (err.response && err.response.data && err.response.data.error) {
@@ -188,7 +191,7 @@ export default function Feedback({}) {
     }
 
     const handleSnackbarClose = () => {
-        setIsSnackbarOpen(false)
+        setIsSnackbarOpen(false);
     }
 
     return (
