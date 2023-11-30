@@ -46,10 +46,7 @@ export default function Announcement({}) {
         }
         setRole(role);
         getUserDetails(token);
-
-        if (role == 'ADMIN') {
-            getAllAnnouncementsByCourse(token);
-        }
+        getAllAnnouncementsByCourse(token);
     }, []);
 
     const getUserDetails = async (token) => {
@@ -103,13 +100,17 @@ export default function Announcement({}) {
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        setAnnouncementContent('');
-        setAnnouncementTitle('');
     };
 
     const handleCreateAnnouncement = async () => {
         handleCloseModal();
-        createAnnouncement(token);
+        createAnnouncement(token).then(() => {
+            setMessage("Announcement successfully created");
+            setSnackType('success');
+            setIsSnackbarOpen(true);
+            setAnnouncementContent('');
+            setAnnouncementTitle('');
+        });
     };
 
     const createAnnouncement = async (token) => {
@@ -162,6 +163,10 @@ export default function Announcement({}) {
                     setIsSnackbarOpen(true);
                 }
             });
+    }
+
+    const handleSnackbarClose = () => {
+        setIsSnackbarOpen(false);
     }
 
     return (
@@ -245,6 +250,11 @@ export default function Announcement({}) {
                     </DialogActions>
                 </Dialog>
             </>
+            <Snackbar open={isSnackbarOpen} autoHideDuration={4000} onClose={handleSnackbarClose}>
+                <Alert severity={snackType} onClose={handleSnackbarClose}>
+                    {message}
+                </Alert>
+            </Snackbar>
         </>
     );
 }
