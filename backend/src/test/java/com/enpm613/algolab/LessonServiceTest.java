@@ -13,6 +13,10 @@ import com.enpm613.algolab.repository.PracticeQuestionRepository;
 import com.enpm613.algolab.service.LessonService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -20,24 +24,21 @@ import java.util.List;
 
 public class LessonServiceTest {
 
-    @Autowired
+
     private LessonService lessonService;
 
-    @Autowired
+    @Mock
     private LessonRepository lessonRepository;
 
-    @Autowired
+    @Mock
     private LessonContentRepository lessonContentRepository;
 
-    @Autowired
+    @Mock
     private PracticeQuestionRepository practiceQuestionRepository;
 
     @BeforeEach
     void setUp() {
-        lessonRepository = mock(LessonRepository.class);
-        lessonContentRepository = mock(LessonContentRepository.class);
-        practiceQuestionRepository = mock(PracticeQuestionRepository.class);
-
+        MockitoAnnotations.openMocks(this);
         lessonService = new LessonService(lessonRepository, lessonContentRepository, practiceQuestionRepository);
     }
 
@@ -45,7 +46,7 @@ public class LessonServiceTest {
     void testCreateLessonWithLessonContent() {
         // Create a LessonPage with valid data
         LessonPage lessonPage = createSampleLessonPage();
-
+        System.out.println(lessonPage);
 
         // Mock repository save methods
         when(lessonRepository.save(any(LessonPage.class))).thenReturn(lessonPage);
@@ -65,6 +66,14 @@ public class LessonServiceTest {
         // Create a LessonPage with no lesson content
         LessonPage lessonPage = new LessonPage();
         lessonPage.setTitle("Lesson with No Content");
+        lessonPage.setId("1");
+        lessonPage.setCourseId("1");
+        lessonPage.setTitle("Test Lesson");
+        lessonPage.setEstimatedCompletionTime(1L);
+        LessonContent lessonContent = new LessonContent();
+        List<LessonContent> lessonContentList = new ArrayList<>();
+        lessonContentList.add(lessonContent);
+        lessonPage.setContents(lessonContentList);
 
         // Call the service method
         RuntimeException exception = assertThrows(RuntimeException.class,
@@ -77,10 +86,10 @@ public class LessonServiceTest {
     @Test
     void testGetLesson() {
         // Mock repository findById method
-        when(lessonRepository.findById(1L)).thenReturn(java.util.Optional.of(createSampleLessonPage()));
+        when(lessonRepository.findById("1")).thenReturn(java.util.Optional.of(createSampleLessonPage()));
 
         // Call the service method
-        LessonPage retrievedLesson = lessonService.getLesson(1L);
+        LessonPage retrievedLesson = lessonService.getLesson("1");
 
         // Assertions
         assertNotNull(retrievedLesson);
@@ -94,8 +103,8 @@ public class LessonServiceTest {
         updatedLesson.setTitle("Updated Lesson");
 
         // Mock repository methods
-        when(lessonRepository.existsById(1L)).thenReturn(true);
-        when(lessonRepository.findById(1L)).thenReturn(java.util.Optional.of(createSampleLessonPage()));
+        when(lessonRepository.existsById("1")).thenReturn(true);
+        when(lessonRepository.findById("1")).thenReturn(java.util.Optional.of(createSampleLessonPage()));
         when(lessonRepository.save(any(LessonPage.class))).thenReturn(updatedLesson);
 
         // Call the service method
@@ -108,25 +117,29 @@ public class LessonServiceTest {
 
     @Test
     void testDeleteLesson() {
+
+        LessonPage sampleLesson = createSampleLessonPage();
+        System.out.println(sampleLesson);
         // Mock repository findById method
-        when(lessonRepository.findById(1L)).thenReturn(java.util.Optional.of(createSampleLessonPage()));
+        when(lessonRepository.findById("1")).thenReturn(java.util.Optional.of(sampleLesson));
 
         // Call the service method
-        lessonService.deleteLesson(1L);
+        lessonService.deleteLesson("1");
 
         // Verify that the delete methods were called
-        verify(practiceQuestionRepository, times(1)).deleteAll(anyList());
-        verify(lessonContentRepository, times(1)).deleteAll(anyList());
-        verify(lessonRepository, times(1)).delete(any(LessonPage.class));
+        verify(practiceQuestionRepository, times(1)).deleteAll(eq(sampleLesson.getContents().get(0).getPracticeQuestions()));
+        System.out.println("Actual invocation: " + Mockito.mockingDetails(practiceQuestionRepository).getInvocations());
+        verify(lessonContentRepository, times(1)).deleteAll(eq(sampleLesson.getContents()));
+        verify(lessonRepository, times(1)).delete(eq(sampleLesson));
     }
 
     @Test
     void testGetLessonContent() {
         // Mock repository findById method
-        when(lessonRepository.findById(1L)).thenReturn(java.util.Optional.of(createSampleLessonPage()));
+        when(lessonRepository.findById("1")).thenReturn(java.util.Optional.of(createSampleLessonPage()));
 
         // Call the service method
-        LessonPage retrievedLesson = lessonService.getLessonContent(1L);
+        LessonPage retrievedLesson = lessonService.getLessonContent("1");
 
         // Assertions
         assertNotNull(retrievedLesson);
@@ -136,10 +149,10 @@ public class LessonServiceTest {
     @Test
     void testGetLessonPages() {
         // Mock repository findByCourseId method
-        when(lessonRepository.findByCourseId(1L)).thenReturn(List.of(createSampleLessonPage()));
+        when(lessonRepository.findByCourseId("1")).thenReturn(List.of(createSampleLessonPage()));
 
         // Call the service method
-        List<LessonPage> lessonPages = lessonService.getLessonPages(1L);
+        List<LessonPage> lessonPages = lessonService.getLessonPages("1");
 
         // Assertions
         assertNotNull(lessonPages);
@@ -149,24 +162,33 @@ public class LessonServiceTest {
 
     private LessonPage createSampleLessonPage() {
         LessonPage lessonPage = new LessonPage();
-        lessonPage.setId(1L);
-        lessonPage.setCourseId(11L);
+        lessonPage.setId("1");
+        lessonPage.setCourseId("1");
         lessonPage.setTitle("Test Lesson");
-
+        lessonPage.setEstimatedCompletionTime(1L);
         LessonContent lessonContent = new LessonContent();
-        lessonContent.setLessonPageId(1L);
-        lessonContent.setLessonContentId(2L);
+        lessonContent.setId("1");
         lessonContent.setData("Lesson content data");
         lessonContent.setMediaLink("http://algolab.com");
 
         PracticeQuestion practiceQuestion = new PracticeQuestion();
-        practiceQuestion.setPracticeQuestionId(1L);
+        practiceQuestion.setId("1");
+        practiceQuestion.setQuestionName("Arrays");
         practiceQuestion.setQuestionDifficulty("Medium");
-        practiceQuestion.setQuestionContent("What is the time complexity of quicksort?");
+        practiceQuestion.setQuestionLink("http://www.w3schools.com");
         practiceQuestion.setAnswerContent("The time complexity of quicksort is O(n log n)");
+
+        PracticeQuestion practiceQuestion1 = new PracticeQuestion();
+        practiceQuestion1.setId("1");
+        practiceQuestion1.setQuestionName("Arrays");
+        practiceQuestion1.setQuestionDifficulty("Medium");
+        practiceQuestion1.setQuestionLink("http://www.w3schools.com");
+        practiceQuestion1.setAnswerContent("The time complexity of quicksort is O(n log n)");
+
 
         List<PracticeQuestion> practiceQuestionList = new ArrayList<>();
         practiceQuestionList.add(practiceQuestion);
+        practiceQuestionList.add(practiceQuestion1);
 
         lessonContent.setPracticeQuestions(practiceQuestionList);
 

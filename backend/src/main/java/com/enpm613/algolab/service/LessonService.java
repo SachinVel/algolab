@@ -21,12 +21,15 @@ public class LessonService {
     LessonContentRepository lessonContentRepository;
     @Autowired
     PracticeQuestionRepository practiceQuestionRepository;
+    @Autowired
+    public LessonService(LessonRepository lessonRepository, LessonContentRepository lessonContentRepository, PracticeQuestionRepository practiceQuestionRepository) {
+        this.lessonRepository = lessonRepository;
+        this.lessonContentRepository=lessonContentRepository;
+        this.practiceQuestionRepository=practiceQuestionRepository;
+    }
 
 
-
-
-
-        @Transactional
+    @Transactional
         public LessonPage createLesson(LessonPage lessonPage) {
             if (lessonPage.isEmpty()) {
                 throw new RuntimeException("Cannot create Lesson");
@@ -160,27 +163,27 @@ public class LessonService {
 
 
 
-    public PracticeQuestion createPracticeQuestion(PracticeQuestion practiceQuestion) {
-        return practiceQuestionRepository.save(practiceQuestion);
-    }
-
-    public PracticeQuestion getPracticeQuestion(String id) {
-
-        return practiceQuestionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lesson not found."));
-    }
-
-    public PracticeQuestion updatePracticeQuestion(PracticeQuestion practiceQuestion) {
-        return practiceQuestionRepository.save(practiceQuestion);
-    }
-
-    public void deletePracticeQuestion(String id) {
-
-
-        PracticeQuestion existingPracticeQuestion = practiceQuestionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lesson Content not found."));
-        practiceQuestionRepository.delete(existingPracticeQuestion);
-    }
+//    public PracticeQuestion createPracticeQuestion(PracticeQuestion practiceQuestion) {
+//        return practiceQuestionRepository.save(practiceQuestion);
+//    }
+//
+//    public PracticeQuestion getPracticeQuestion(String id) {
+//
+//        return practiceQuestionRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Lesson not found."));
+//    }
+//
+//    public PracticeQuestion updatePracticeQuestion(PracticeQuestion practiceQuestion) {
+//        return practiceQuestionRepository.save(practiceQuestion);
+//    }
+//
+//    public void deletePracticeQuestion(String id) {
+//
+//
+//        PracticeQuestion existingPracticeQuestion = practiceQuestionRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Lesson Content not found."));
+//        practiceQuestionRepository.delete(existingPracticeQuestion);
+//    }
 
     public LessonPage getLessonContent(String lessonId){
 
