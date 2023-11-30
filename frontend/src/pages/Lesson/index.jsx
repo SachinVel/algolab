@@ -329,7 +329,7 @@ export default function Lesson() {
         let isOwner = false;
         await backendCall.get('/api/v1/checkCourse?courseId=' + courseId, config).then((res) => {
             console.log('getUserDetails response : ', res);
-            isOwner = true;
+            isOwner = res.data;
         }).catch((err) => {
             console.log('login error : ', err);
             if (err.response && err.response.data && err.response.data.error) {
@@ -389,8 +389,6 @@ export default function Lesson() {
             }
         });
     }
-
-
 
     const hanldeSnackbarClose = () => {
         setIsSnackbarOpen(false);

@@ -45,7 +45,7 @@ export default function Course() {
         };
 
         return (
-            <Card>
+            <Card onClick={handleEditCourse}>
                 <CardMedia
                     component="img"
                     height="50%"

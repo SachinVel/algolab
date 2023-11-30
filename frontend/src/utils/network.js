@@ -13,9 +13,9 @@ backendCall.interceptors.response.use(
   },
   (error) => {
     if (error.response && error.response.status === 403) {
-      // window.localStorage.removeItem('token');
-      // window.localStorage.removeItem('role');
-      // window.location = '/login';
+      window.localStorage.removeItem('token');
+      window.localStorage.removeItem('role');
+      window.location = '/login';
     }
     return Promise.reject(error);
   }
