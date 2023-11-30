@@ -12,9 +12,9 @@ import java.util.List;
 public class LessonPage {
 
     @Id
-    private Long id;
+    private String id;
 
-    private Long courseId;
+    private String courseId;
 
     private String title;
 
@@ -30,19 +30,19 @@ public class LessonPage {
         // Add more properties as needed
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Long getCourseId() {
+    public String getCourseId() {
         return courseId;
     }
 
-    public void setCourseId(Long courseId) {
+    public void setCourseId(String courseId) {
         this.courseId = courseId;
     }
 

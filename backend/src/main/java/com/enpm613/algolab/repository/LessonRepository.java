@@ -7,10 +7,10 @@ import org.springframework.data.mongodb.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface LessonRepository extends MongoRepository<LessonPage, Long> {
+public interface LessonRepository extends MongoRepository<LessonPage, String> {
 
     @Query("{id: ?0}")
-    Optional<LessonPage> findById(Long id);
+    Optional<LessonPage> findById(String id);
 
-    List<LessonPage> findByCourseId(Long courseId);
+    List<LessonPage> findByCourseId(String courseId);
 }

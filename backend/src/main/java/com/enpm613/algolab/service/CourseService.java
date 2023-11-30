@@ -3,7 +3,6 @@ package com.enpm613.algolab.service;
 import com.enpm613.algolab.entity.Course;
 import com.enpm613.algolab.entity.CourseDTO;
 import com.enpm613.algolab.entity.User;
-import com.enpm613.algolab.repository.CourseInstructorMappingRepository;
 import com.enpm613.algolab.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -24,8 +23,6 @@ public class CourseService {
     @Autowired
     CourseRepository courseRepository;
 
-    @Autowired
-    CourseInstructorMappingRepository courseMapRepository;
 
     private final MongoTemplate mongoTemplate;
 
@@ -57,6 +54,10 @@ public class CourseService {
         return courseRepository.findByInstructorId(instructor.getId());
     }
 
+    public Course getCourseById(String courseId){
+        return courseRepository.findById(courseId).get();
+    }
+
     public Course createCourse(CourseDTO newCourse, User instructor) throws IOException{
 
         MultipartFile imageFile = newCourse.getImage();
@@ -72,7 +73,12 @@ public class CourseService {
 
     public void deleteCourse(String courseId) throws IOException{
         courseRepository.deleteById(courseId);
-        s3Service.deleteFile(courseId);
+//        s3Service.deleteFile(courseId);
+    }
+
+    public boolean checkCourse(User curUser, String courseId) throws IOException{
+        Course curCourse = courseRepository.findById(courseId).get();
+        return curCourse.getInstructor().getId().equals(curUser.getId());
     }
 
 

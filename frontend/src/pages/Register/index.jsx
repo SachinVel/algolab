@@ -169,9 +169,6 @@ export default function Register({ setLoggedIn }) {
         setIsErrSnackbarOpen(true);
       });
     }
-
-
-
   }
 
   const hanldeErrSnackbarClose = () => {
