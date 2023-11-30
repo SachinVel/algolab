@@ -33,7 +33,7 @@ public class CourseController {
     private static final Logger logger = LoggerFactory.getLogger(CourseController.class);
 
     @GetMapping("/allCourses")
-    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('INSTRUCTOR', 'ADMIN', 'STUDENT')")
     public ResponseEntity<Object> getAllCourses() {
         //It's a sample request to
         logger.debug("Inside getAllCourses : " );
