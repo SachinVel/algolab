@@ -33,7 +33,7 @@ import com.enpm613.algolab.service.UserService;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("api/v1/announcement")
 @AllArgsConstructor
 @CrossOrigin("*")
 public class AnnouncementController {

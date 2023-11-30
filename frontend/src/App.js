@@ -1,4 +1,3 @@
-
 import './App.css';
 import { Alert, Box, CircularProgress, Snackbar } from "@mui/material";
 import { BrowserRouter, Routes, Route, Navigate, Router } from "react-router-dom";
@@ -12,8 +11,10 @@ const Register = lazy(() => import("./pages/Register"));
 const Logout = lazy(() => import("./pages/Logout"));
 const Course = lazy(() => import("./pages/Course"));
 const Profile = lazy(() => import("./pages/Profile"));
+const Feedback = lazy(() => import("./pages/Feedback"));
 const Lesson = lazy(() => import("./pages/Lesson"));
 const Issue = lazy(() => import("./pages/Issue"));
+const Announcement = lazy(() => import("./pages/Announcement"));
 
 function App() {
 
@@ -49,8 +50,10 @@ function App() {
               <Route path="/logout" exact element={<Logout setLoggedIn={setLoggedIn} />} />
               <Route path="/course" exact element={loggedIn ? <Course /> : <Navigate to='/login' state={{ showLoginNecessary: true }} />} />
               <Route path="/profile" exact element={loggedIn ? <Profile /> : <Navigate to='/login' state={{ showLoginNecessary: true }} />} />
+              <Route path="/feedback" exact element={loggedIn ? <Feedback /> : <Navigate to='/login' state={{ showLoginNecessary: true }} />} />
               <Route path="/issue" exact element={loggedIn ? <Issue /> : <Navigate to='/login' state={{ showLoginNecessary: true }} />} />
               <Route path="/lesson/:courseId" exact element={loggedIn ? <Lesson /> : <Navigate to='/login' state={{ showLoginNecessary: true }} />} />
+              <Route path="/announcement/:courseId" exact element={loggedIn ? <Announcement /> : <Navigate to='/login' state={{ showLoginNecessary: true }} />} />
             </Routes>
           </Suspense>
         </BrowserRouter>
