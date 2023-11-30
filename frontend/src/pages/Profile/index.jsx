@@ -1,28 +1,37 @@
-import React, { useState } from 'react';
-import { Button, TextField, Link, Typography, Box, TextareaAutosize, Stack, InputLabel, Select, MenuItem } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Button, TextField, Link, Box, Typography, Stack, InputLabel, Select, MenuItem } from '@mui/material';
 
-import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import backendCall from "../../utils/network";
 import { useNavigate } from 'react-router-dom';
+import styles from './profile.module.css';
+import Snackbar from '@mui/material/Snackbar';
+import backendCall from '../../utils/network';
+
+import Header from '../../components/Header';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 
-export default function Register({ setLoggedIn }) {
+export default function Profile() {
+
+  const [token, setToken] = useState('');
+  const [role, setRole] = useState('');
 
   const [username, setUserName] = useState('');
+  const [userData, setUserData] = useState({});
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [role, setRole] = useState('');
   const [email, setEmail] = useState('');
   const [bio, setBio] = useState('');
   const [errorMesage, setErrorMessage] = useState('');
   const [isErrSnackbarOpen, setIsErrSnackbarOpen] = useState(false);
+
+  const [sucSnacbarOpen, setSucSnackbarOpen] = useState(false);
+
 
   const [errors, setErrors] = useState({
     password: '',
@@ -34,33 +43,123 @@ export default function Register({ setLoggedIn }) {
     role: ''
   });
 
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    let role = window.localStorage.getItem('role');
+    let token = window.localStorage.getItem('token');
+    console.log('token : ', token)
+    setToken(token);
+    if (token == null || token == '') {
+      window.localStorage.removeItem('token');
+      window.localStorage.removeItem('role');
+      window.location = '/login';
+    }
+    setRole(role);
+    getUserDetails(token);
+  }, []);
+
+  const getUserDetails = async (token) => {
+
+    let config = {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    };
+
+    await backendCall.get('/api/v1/userDetails', config).then((res) => {
+      console.log('getUserDetails response : ', res);
+      let userData = res.data;
+      setBio(userData.bio);
+      setEmail(userData.email);
+      setFirstName(userData.firstName);
+      setLastName(userData.lastName);
+      setUserName(userData.username);
+      setUserData(userData);
+    }).catch((err) => {
+      console.log('login error : ', err);
+      if (err.response && err.response.data && err.response.data.error) {
+        console.log('err : ', err);
+        setErrorMessage(err.response.data.error);
+        setIsErrSnackbarOpen(true);
+      }
+    });
+  }
+
+  const updateUserDetails = async () => {
+    if (validateForm()) {
+
+      let newPassword = password == '' ? userData.password : password;
+      let data = {
+        id: userData.id,
+        username: username,
+        password: newPassword,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        role: role,
+        bio: bio
+      }
+      let config = {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      };
+
+      await backendCall.post('/api/v1/userDetails', data, config).then((res) => {
+        console.log("sucess")
+        window.localStorage.setItem('role', role);
+        window.localStorage.setItem('token', res.data);
+        setPassword('');
+        setConfirmPassword('');
+        setSucSnackbarOpen(true);
+        // getUserDetails(token);
+      }).catch((err) => {
+        console.log('err : ', err);
+        setErrorMessage(err.response.data.error);
+        setIsErrSnackbarOpen(true);
+        // getUserDetails(token);
+      });
+    }
+
+
+
+  }
+
+
+
+
   const validateForm = () => {
     let valid = true;
 
-    // Validate password
-    if (password.length < 8) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        password: 'Password must be at least 8 characters.'
-      }));
-      valid = false;
-    } else if (!/(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])/.test(password)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        password: 'Password must contain at least one letter, one number, and one special character.'
-      }));
-      valid = false;
-    } else {
-      setErrors((prevErrors) => ({ ...prevErrors, password: '' }));
+    if (password != '' && confirmPassword != '') {
+      // Validate password
+      if (password.length < 8) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          password: 'Password must be at least 8 characters.'
+        }));
+        valid = false;
+      } else if (!/(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])/.test(password)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          password: 'Password must contain at least one letter, one number, and one special character.'
+        }));
+        valid = false;
+      } else {
+        setErrors((prevErrors) => ({ ...prevErrors, password: '' }));
+      }
+
+      // Validate confirmPassword
+      if (confirmPassword !== password) {
+        setErrors((prevErrors) => ({ ...prevErrors, password: 'Passwords do not match.' }));
+        valid = false;
+      } else {
+        setErrors((prevErrors) => ({ ...prevErrors, password: '' }));
+      }
     }
 
-    // Validate confirmPassword
-    if (confirmPassword !== password) {
-      setErrors((prevErrors) => ({ ...prevErrors, password: 'Passwords do not match.' }));
-      valid = false;
-    } else {
-      setErrors((prevErrors) => ({ ...prevErrors, password: '' }));
-    }
 
     // Validate bio
     if (bio.length > 150) {
@@ -110,8 +209,6 @@ export default function Register({ setLoggedIn }) {
     return valid;
   };
 
-  const navigate = useNavigate();
-
   const onUsernameChange = (event) => {
     setUserName(event.target.value);
   }
@@ -144,57 +241,19 @@ export default function Register({ setLoggedIn }) {
     setConfirmPassword(event.target.value);
   }
 
-  const register = async () => {
-
-    if (validateForm()) {
-      await backendCall.post('/api/v1/register',
-        {
-          username: username,
-          password: password,
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
-          role: role,
-          bio: bio
-        }
-      ).then((res) => {
-        window.localStorage.removeItem('token');
-        setLoggedIn(false);
-        navigate('/login', {
-          state: { isRegisterSuccess: true }
-        });
-      }).catch((err) => {
-        console.log('err : ', err);
-        setErrorMessage(err.response.data.error);
-        setIsErrSnackbarOpen(true);
-      });
-    }
-
-
-
-  }
-
   const hanldeErrSnackbarClose = () => {
     setIsErrSnackbarOpen(false);
   }
 
+  const hanldeSucSnackbarClose = () => {
+    setSucSnackbarOpen(false);
+  }
+
   return (
     <>
-      <Box sx={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)"
-      }}>
-        {/* <Header /> */}
-        <div>
-          <Typography variant="h4" sx={{
-            color: "#555",
-            margin: "20px"
-          }}>Register</Typography>
-        </div>
-
-        <Box>
+      <Header />
+      <Box className={styles.bodyContainer}>
+        <Box className={styles.formContainer}>
           <Stack direction="row" justifyContent="space-between">
             <TextField
               type="text"
@@ -214,11 +273,6 @@ export default function Register({ setLoggedIn }) {
               placeholder="Last Name"
               required
             />
-
-
-
-
-
           </Stack>
           <br />
           <TextField
@@ -275,7 +329,6 @@ export default function Register({ setLoggedIn }) {
             sx={{ width: "400px" }}
             onChange={onRoleChange}
             placeholder='Role'
-          // variant='standard'
           >
             <MenuItem value="">Select Role</MenuItem>
             <MenuItem value='INSTRUCTOR'>Instructor</MenuItem>
@@ -303,15 +356,15 @@ export default function Register({ setLoggedIn }) {
             variant="contained"
             color="primary"
             size="small"
-            disabled={username === '' || password === ''}
-            onClick={register}
+            onClick={updateUserDetails}
             sx={{ padding: "10px 20px" }}
           >
-            Register
+            Update
           </Button>
         </Box>
 
       </Box>
+
       <Snackbar
         open={isErrSnackbarOpen}
         autoHideDuration={4000}
@@ -394,14 +447,25 @@ export default function Register({ setLoggedIn }) {
         disableWindowBlurListener={true}
       >
         {
-            errorMesage &&
-            <>
-              <Alert onClose={hanldeErrSnackbarClose} severity="error">
-                {errorMesage}
-              </Alert>
-              <br></br>
-            </>
-          }
+          errorMesage &&
+          <>
+            <Alert onClose={hanldeErrSnackbarClose} severity="error">
+              {errorMesage}
+            </Alert>
+            <br></br>
+          </>
+        }
+      </Snackbar>
+
+      <Snackbar
+        open={sucSnacbarOpen}
+        autoHideDuration={4000}
+        onClose={hanldeSucSnackbarClose}
+        disableWindowBlurListener={true}
+      >
+        <Alert onClose={hanldeSucSnackbarClose} severity="success">
+          Profile is updated successfully.
+        </Alert>
       </Snackbar>
     </>
 

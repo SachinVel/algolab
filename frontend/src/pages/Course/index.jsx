@@ -11,7 +11,6 @@ export default function Course() {
     const [role, setRole] = useState('');
 
     useEffect(() => {
-
         let role = window.localStorage.getItem('role');
         setRole(role);
     }, []);
