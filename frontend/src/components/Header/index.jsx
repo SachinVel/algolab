@@ -37,8 +37,10 @@ export default function Header() {
         window.location = '/login';
     }
 
-    const handleMenuChange = (event) => {
-        window.location = `/${event.target.value}`
+    const handleMenuChange = (value) => {
+        if( value!==undefined ){
+            window.location = `/${value}`
+        }
     };
 
     useEffect(() => {
@@ -58,23 +60,22 @@ export default function Header() {
                 <ToggleButtonGroup
                     value={menu}
                     exclusive
-                    onChange={handleMenuChange}
+                    onChange={(event)=>{handleMenuChange(event.target.value)}}
                 >
                     <ToggleButton value="course" aria-label="left aligned">
-                        <LibraryBooksIcon />Course
+                        <LibraryBooksIcon onClick={()=>{handleMenuChange("course")}} />Course
                     </ToggleButton>
                     <ToggleButton value="feedback" aria-label="centered">
-                        <FeedbackIcon /> Feedback
+                        <FeedbackIcon onClick={()=>{handleMenuChange("feedback")}} /> Feedback
                     </ToggleButton>
                     {
                         role == 'ADMIN' &&
                         <ToggleButton value="issue" aria-label="right aligned">
-                            <BugReportIcon /> Issue
+                            <BugReportIcon onClick={()=>{handleMenuChange("issue")}} /> Issue
                         </ToggleButton>
                     }
-                    <ToggleButton value="profile" aria-label="justified" onChange={handleMenuChange}>
-                        <Person2Icon />
-                        <Typography variant="subtitle2" sx={{ marginLeft: 1 }}>Profile</Typography>
+                    <ToggleButton value="profile" aria-label="justified">
+                        <Person2Icon onClick={()=>{handleMenuChange("profile")}} /> Profile
                     </ToggleButton>
                 </ToggleButtonGroup>
             </Stack>
