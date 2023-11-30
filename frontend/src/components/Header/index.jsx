@@ -14,6 +14,7 @@ import CircleNotificationsIcon from '@mui/icons-material/CircleNotifications';
 import MuiToggleButton from "@mui/material/ToggleButton";
 import { useLocation } from 'react-router-dom';
 import Person2Icon from '@mui/icons-material/Person2';
+import ReportIssue from '../ReportIssue';
 
 export default function Header() {
 
@@ -26,6 +27,7 @@ export default function Header() {
     const location = useLocation();
 
     const [menu, setMenu] = useState('courses');
+    const [role, setRole] = useState('');
 
 
     const logout = () => {
@@ -43,6 +45,9 @@ export default function Header() {
         let pathArray = pathname.split('/');
         let lastSubpath = pathArray[pathArray.length - 1];
         setMenu(lastSubpath);
+        let role = window.localStorage.getItem('role');
+        setRole(role);
+
     }, []);
 
     return (
@@ -60,9 +65,13 @@ export default function Header() {
                     <ToggleButton value="feedback" aria-label="centered">
                         <FeedbackIcon /> Feedback
                     </ToggleButton>
-                    <ToggleButton value="issue" aria-label="right aligned">
-                        <BugReportIcon /> Issue
-                    </ToggleButton>
+                    {
+                        role == 'ADMIN' &&
+                        <ToggleButton value="issue" aria-label="right aligned">
+                            <BugReportIcon /> Issue
+                        </ToggleButton>
+                    }
+
                     <ToggleButton value="announcement" aria-label="justified">
                         <CircleNotificationsIcon /> Announcement
                     </ToggleButton>
@@ -71,6 +80,11 @@ export default function Header() {
                     </ToggleButton>
                 </ToggleButtonGroup>
             </Stack>
+            {
+                role !== 'ADMIN' &&
+                <ReportIssue></ReportIssue>
+            }
+
             <Button variant="contained" onClick={logout}>Logout</Button>
         </Stack>
     );

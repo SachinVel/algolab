@@ -1,6 +1,7 @@
 package com.enpm613.algolab.service;
 
 import com.enpm613.algolab.entity.Issue;
+import com.enpm613.algolab.entity.User;
 import com.enpm613.algolab.repository.IssueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,8 @@ public class IssueService {
         return issueRepository.findAll();
     }
 
-    public Issue createIssue(Issue issue) {
+    public Issue createIssue(Issue issue, User curUser) {
+        issue.setUser(curUser);
         return issueRepository.save(issue);
     }
 
