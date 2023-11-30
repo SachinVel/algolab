@@ -3,6 +3,7 @@ package com.enpm613.algolab.controller;
 import com.enpm613.algolab.entity.Course;
 import com.enpm613.algolab.entity.CourseDTO;
 import com.enpm613.algolab.entity.User;
+import com.enpm613.algolab.repository.CourseRepository;
 import com.enpm613.algolab.service.CourseService;
 import com.enpm613.algolab.service.UserService;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,7 @@ public class CourseController {
     UserService userService;
 
     private static final Logger logger = LoggerFactory.getLogger(CourseController.class);
+    private final CourseRepository courseRepository;
 
     @GetMapping("/allCourses")
     @PreAuthorize("hasAnyAuthority('INSTRUCTOR', 'ADMIN', 'STUDENT')")
@@ -63,13 +65,17 @@ public class CourseController {
     @PreAuthorize("hasAnyAuthority('INSTRUCTOR','ADMIN')")
     public ResponseEntity<Object> createCourse(@AuthenticationPrincipal UserDetails user,  @ModelAttribute CourseDTO newCourse) throws IOException {
         //It's a sample request to
-        logger.debug("Inside createCourse : " );
-        String curUsername = user.getUsername();
-        User curUser = userService.getUserByUsername(curUsername);
+        try {
+            logger.debug("Inside createCourse : ");
+            String curUsername = user.getUsername();
+            User curUser = userService.getUserByUsername(curUsername);
 
-        Course createdCourse = courseService.createCourse(newCourse,curUser);
+            Course createdCourse = courseService.createCourse(newCourse, curUser);
 
-        return ResponseEntity.ok("true");
+            return ResponseEntity.ok("true");
+        } catch (Exception e) {
+        return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+    }
     }
 
     @GetMapping("/checkCourse")
