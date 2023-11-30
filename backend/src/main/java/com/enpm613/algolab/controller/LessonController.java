@@ -65,47 +65,7 @@ public class LessonController {
         }
     }
 
-    @GetMapping("/getPracticeQuestion/{practiceQuestionId}")
-    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','STUDENT')")
-    public ResponseEntity<Object> getPracticeQuestion(@PathVariable("practiceQuestionId") Long id) {
-        try {
-            return ResponseEntity.ok(lessonService.getPracticeQuestion(id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
-    }
 
-    @PostMapping("/createPracticeQuestion")
-    @PreAuthorize("hasAuthority('INSTRUCTOR')")
-    public ResponseEntity<Object> createPracticeQuestion(@RequestBody PracticeQuestion practiceQuestion) {
-        try {
-            return ResponseEntity.ok(lessonService.createPracticeQuestion(practiceQuestion));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
-    }
-
-
-    @PutMapping("/updatePracticeQuestion")
-    @PreAuthorize("hasAuthority('INSTRUCTOR')")
-    public ResponseEntity<Object> updatePracticeQuestion(@RequestBody PracticeQuestion practiceQuestion) {
-        try {
-            return ResponseEntity.ok(lessonService.updatePracticeQuestion(practiceQuestion));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/deletePracticeQuestion/{deletePracticeQuestionId}")
-    @PreAuthorize("hasAuthority('INSTRUCTOR')")
-    public ResponseEntity<Object> deletePracticeQuestion(@PathVariable("practiceQuestionId") Long id) {
-        try {
-            lessonService.deletePracticeQuestion(id);
-            return ResponseEntity.ok("Practice Question deleted successfully.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
-    }
 
     @GetMapping("/getLessonContent/{lessonId}")
     @PreAuthorize("hasAnyAuthority('INSTRUCTOR','STUDENT')")

@@ -55,4 +55,7 @@ public class PracticeQuestion {
     public void setAnswerContent(String answerContent) {
         this.answerContent = answerContent;
     }
+
+    public void setId(long l) {
+    }
 }
