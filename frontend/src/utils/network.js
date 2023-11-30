@@ -1,11 +1,12 @@
 import axios from "axios";
 
-const BACKEND_URL = process.env.REACT_APP_NODE_API;
+// Use the below URL for local testing
+const BACKEND_URL = process.env.REACT_APP_SPRING_BOOT_API_LOCAL;
+// const BACKEND_URL = process.env.REACT_APP_SPRING_BOOT_API;
 
 const backendCall = axios.create({
   baseURL: BACKEND_URL,
 });
-
 
 backendCall.interceptors.response.use(
   (response) => {
