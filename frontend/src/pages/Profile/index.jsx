@@ -322,21 +322,6 @@ export default function Profile() {
           />
           <br /><br />
 
-          <InputLabel id="role-label">Role</InputLabel>
-          <Select
-            labelId="role-label"
-            value={role}
-            sx={{ width: "400px" }}
-            onChange={onRoleChange}
-            placeholder='Role'
-          >
-            <MenuItem value="">Select Role</MenuItem>
-            <MenuItem value='INSTRUCTOR'>Instructor</MenuItem>
-            <MenuItem value='STUDENT'>Student</MenuItem>
-          </Select>
-
-          <br /><br />
-
           <TextField
             id="standard-basic"
             label="Bio"

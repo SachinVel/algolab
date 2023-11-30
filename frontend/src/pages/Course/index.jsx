@@ -41,14 +41,14 @@ export default function Course() {
         }
 
         const handleAnnouncementOnClick = (event) => {
-            window.location = `/${event.target.value}/${course.id}`;
+            window.location = `/announcement/${course.id}`;
         };
 
         return (
             <Card onClick={handleEditCourse}>
                 <CardMedia
                     component="img"
-                    height="50%"
+                    style={{width: '100%', height: '100%', objectFit: 'contain'}}
                     image={imageUrl}
                     alt={course.title}
                 />
@@ -206,13 +206,9 @@ export default function Course() {
         });
     }
 
-    
-
     const hanldeSnackbarClose = () => {
         setIsSnackbarOpen(false);
     }
-
-
 
     return (
         <>
