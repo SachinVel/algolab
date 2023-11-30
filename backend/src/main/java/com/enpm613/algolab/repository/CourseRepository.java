@@ -15,4 +15,7 @@ public interface CourseRepository extends MongoRepository<Course, String> {
 
     @Query("{_id: ?0}")
     Course findByCourseId(String courseId);
+
+    @Query("{title: ?0}")
+    Course findByTitle(String title);
 }
