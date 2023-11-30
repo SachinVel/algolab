@@ -58,20 +58,4 @@ public class S3Service {
                 .build(), file.toPath());
     }
 
-    public void deleteFile( String key) {
-
-        if( s3Client==null ){
-            this.s3Client = S3Client.builder()
-                    .region(Region.of(region))
-                    .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKeyId, secretKey)))
-                    .build();
-        }
-
-        String path = "course-images/"+key;
-
-        s3Client.deleteObject(DeleteObjectRequest.builder()
-                .bucket(bucketName)
-                .key(path)
-                .build());
-    }
 }
