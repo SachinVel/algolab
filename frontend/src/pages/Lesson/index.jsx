@@ -487,7 +487,7 @@ export default function Lesson() {
                     <Paper elevation={3} style={{ height: '100%', overflow: 'auto' }}>
                         <List>
                             {lessons != '' && lessons.map((lesson) => (
-                                <StyledListItem key={lesson.id} selected={lessonData.title==lesson.title} onClick={() => handleLessonClick(lesson.id)}>
+                                <StyledListItem key={lesson.id} selected={(lessonData!=null && lessonData.title==lesson.title)} onClick={() => handleLessonClick(lesson.id)}>
                                     <LessonTitle primary={lesson.title} onClick={() => getLesson(token, lesson.id)} />
                                     {isEditable && (
                                         <ListItemSecondaryAction>
