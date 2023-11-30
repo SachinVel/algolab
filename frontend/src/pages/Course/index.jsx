@@ -1,19 +1,21 @@
 
 import React, { useEffect, useState } from 'react';
-import { Alert, Box, Button, Card, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogTitle, Grid, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, ToggleButtonGroup, Typography, styled, } from "@mui/material";
+import { Alert, Box, Button, Card, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Input, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, ToggleButtonGroup, Typography, styled, } from "@mui/material";
 import styles from './course.module.css';
 import Header from '../../components/Header';
 import AddIcon from '@mui/icons-material/Add';
 import MuiToggleButton from "@mui/material/ToggleButton";
 import backendCall from '../../utils/network';
 import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+
 
 
 const s3Prefix = process.env.REACT_APP_S3_PREFIX;
 
 export default function Course() {
 
-    const CourseTile = ({ course , isDelete}) => {
+    const CourseTile = ({ course, isDelete }) => {
 
         const [imageUrl, setImageUrl] = useState('');
         useEffect(() => {
@@ -26,22 +28,24 @@ export default function Course() {
             }
         };
 
-        const handleDeleteCourse = async ()=>{
-            await backendCall.delete('/api/v1/deleteCourse?courseId='+course.id, config).then((res) => {
+        const handleDeleteCourse = async () => {
+            await backendCall.delete('/api/v1/deleteCourse?courseId=' + course.id, config).then((res) => {
                 console.log('getUserDetails response : ', res);
                 getUserCourses(token);
                 getAllCourses(token);
             }).catch((err) => {
-                
+
             });
         }
 
-        const handleEditCourse = async ()=>{
+        const handleEditCourse = async () => {
             window.location = `/lesson/${course.id}`;
         }
 
         const handleAnnouncementOnClick = (event) => {
+            console.log('handleAnnouncement');
             window.location = `/announcement/${course.id}`;
+            event.stopPropagation();
         };
 
         return (
@@ -56,15 +60,13 @@ export default function Course() {
                     <Typography variant="h6">{course.title}</Typography>
                     <Typography variant="body2" color="textSecondary">{course.description}</Typography>
                     <Typography variant="body2" color="textSecondary">Difficulty: {course.difficulty}</Typography>
-                    { isDelete && <Button color='error' onClick={handleDeleteCourse}>Delete</Button>}
-                    { isDelete && <Button onClick={handleEditCourse}>Edit</Button>}
-                    <ToggleButtonGroup
-                        onChange={handleAnnouncementOnClick}
+                    {isDelete && <Button color='error' onClick={handleDeleteCourse}>Delete</Button>}
+                    {isDelete && <Button onClick={handleEditCourse}>Edit</Button>}
+                    <Button
+                        onClick={handleAnnouncementOnClick}
                     >
-                        <ToggleButton value="announcement" aria-label="justified">
-                            <CircleNotificationsIcon /> Announcements
-                        </ToggleButton>
-                    </ToggleButtonGroup>
+                        <CircleNotificationsIcon /> Announcements
+                    </Button>
                 </CardContent>
             </Card>
         );
@@ -80,7 +82,7 @@ export default function Course() {
     const [message, setMessage] = useState('');
     const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
     const [snackType, setSnackType] = useState(false);
-    
+
     const [role, setRole] = useState('');
     const [token, setToken] = useState('');
     const [subMenu, setSubMenu] = useState('allCourse');
@@ -205,7 +207,6 @@ export default function Course() {
             }
         });
     }
-
     const hanldeSnackbarClose = () => {
         setIsSnackbarOpen(false);
     }
@@ -219,7 +220,10 @@ export default function Course() {
                     <DialogTitle>Create Course</DialogTitle>
                     <DialogContent>
                         <TextField label="Title" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth />
-                        <br></br>
+                        <>
+                            <br></br>
+                            <br></br>
+                        </>
                         <InputLabel id="dif-label">Difficulty</InputLabel>
                         <Select
                             labelId="dif-label"
@@ -233,13 +237,38 @@ export default function Course() {
                             <MenuItem value='AVERAGE'>AVERAGE</MenuItem>
                             <MenuItem value='HARD'>HARD</MenuItem>
                         </Select>
-                        <br></br>
+                        <>
+                            <br></br>
+                            <br></br>
+                            <br></br>
+                        </>
                         <TextField label="Description" value={description} onChange={(e) => setDescription(e.target.value)} fullWidth />
-                        <br></br>
-                        <input type="file" onChange={handleImageChange} />
+                        <>
+                            <br></br>
+                            <br></br>
+                            <br></br>
+                        </>
+                        <Box>
+                            <Input
+                                type="file"
+                                onChange={handleImageChange}
+                                style={{ display: 'none' }} // Hide the default file input
+                                id="fileInput"
+                            />
+                            <label htmlFor="fileInput">
+                                <Button
+                                    variant="outlined"
+                                    component="span"
+                                    startIcon={<CloudUploadIcon />}
+                                >
+                                    Upload Image
+                                </Button>
+                            </label>
+                        </Box>
+                        {/* <input type="file" onChange={handleImageChange} /> */}
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleClose} color="primary">
+                        <Button onClick={handleClose} color="secondary">
                             Cancel
                         </Button>
                         <Button onClick={handleSubmit} color="primary">
@@ -248,7 +277,7 @@ export default function Course() {
                     </DialogActions>
                 </Dialog>
                 {
-                    (role == 'INSTRUCTOR') &&
+                    (role == 'INSTRUCTOR' || role == 'ADMIN') &&
                     <Stack flexDirection="row" justifyContent="right" sx={{ padding: '20px' }}>
                         <Button variant='contained' onClick={handleClickOpen}>
                             <AddIcon /> Course
@@ -280,7 +309,7 @@ export default function Course() {
                     <Grid container spacing={2} className={styles.courseGridContainer}>
                         {userCourses.map((course) => (
                             <Grid item xs={12} sm={6} md={4} lg={3} key={course.id}>
-                                <CourseTile course={course} isDelete={true}/>
+                                <CourseTile course={course} isDelete={true} />
 
                             </Grid>
                         ))}
@@ -291,7 +320,7 @@ export default function Course() {
                     <Grid container spacing={2} className={styles.courseGridContainer}>
                         {allCourses.map((course) => (
                             <Grid item xs={12} sm={6} md={4} lg={3} key={course.id}>
-                                <CourseTile course={course} isDelete={true}/>
+                                <CourseTile course={course} isDelete={true} />
                             </Grid>
                         ))}
                     </Grid>
@@ -301,7 +330,7 @@ export default function Course() {
                     <Grid container spacing={2} className={styles.courseGridContainer}>
                         {allCourses.map((course) => (
                             <Grid item xs={12} sm={6} md={4} lg={3} key={course.id}>
-                                <CourseTile course={course}/>
+                                <CourseTile course={course} />
                             </Grid>
                         ))}
                     </Grid>

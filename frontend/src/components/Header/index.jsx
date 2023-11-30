@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+    Box,
     Button,
     Stack,
     ToggleButtonGroup,
@@ -71,21 +72,22 @@ export default function Header() {
                             <BugReportIcon /> Issue
                         </ToggleButton>
                     }
-
-                    {/*<ToggleButton value="announcement" aria-label="justified">*/}
-                    {/*    <CircleNotificationsIcon /> Announcement*/}
-                    {/*</ToggleButton>*/}
-                    <ToggleButton value="profile" aria-label="justified">
-                        <Person2Icon /> Profile
+                    <ToggleButton value="profile" aria-label="justified" onChange={handleMenuChange}>
+                        <Person2Icon />
+                        <Typography variant="subtitle2" sx={{ marginLeft: 1 }}>Profile</Typography>
                     </ToggleButton>
                 </ToggleButtonGroup>
             </Stack>
-            {
-                role !== 'ADMIN' &&
-                <ReportIssue></ReportIssue>
-            }
 
-            <Button variant="contained" onClick={logout}>Logout</Button>
+            <Stack flexDirection="row" justifyContent="center" gap={2}>
+                {
+                    role !== 'ADMIN' &&
+                    <ReportIssue></ReportIssue>
+                }
+
+                <Button sx={{ height: "40px" }} variant="contained" onClick={logout}>Logout</Button>
+            </Stack>
+
         </Stack>
     );
 }

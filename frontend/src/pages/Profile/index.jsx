@@ -254,6 +254,8 @@ export default function Profile() {
       <Header />
       <Box className={styles.bodyContainer}>
         <Box className={styles.formContainer}>
+        <Typography variant='h4'>Profile Information</Typography>
+          <br></br>
           <Stack direction="row" justifyContent="space-between">
             <TextField
               type="text"

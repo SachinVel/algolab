@@ -1,18 +1,20 @@
 
 import React, { useEffect, useState } from 'react';
-import { Alert, Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogTitle, Grid, InputLabel, List, ListItem, ListItemText, MenuItem, Paper, Select, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ToggleButtonGroup, Typography, styled, } from "@mui/material";
+import { Alert, Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, InputLabel, List, ListItem, ListItemSecondaryAction, ListItemText, MenuItem, Paper, Select, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ToggleButtonGroup, Typography, makeStyles, styled, } from "@mui/material";
 import styles from './lesson.module.css';
 import Header from '../../components/Header';
 import AddIcon from '@mui/icons-material/Add';
 import MuiToggleButton from "@mui/material/ToggleButton";
 import backendCall from '../../utils/network';
 import { useParams } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
 export default function Lesson() {
 
 
-    const LessonDialog = ({ open, onClose,  onError, isUpdate }) => {
+    const LessonDialog = ({ open, onClose, onError, isUpdate }) => {
 
         const [title, setTitle] = useState();
         const [lessonContent, setLessonContent] = useState('');
@@ -61,7 +63,7 @@ export default function Lesson() {
                 }
 
             }
-        },[]);
+        }, []);
 
         const isValid = () => {
             // Validate title length
@@ -140,7 +142,7 @@ export default function Lesson() {
                     },
                 });
                 getAllLessons(token);
-                getLesson(token,lessonData.id);
+                getLesson(token, lessonData.id);
                 onClose()
             }
         }
@@ -151,9 +153,20 @@ export default function Lesson() {
                 <DialogContent>
                     <Stack flexDirection="column" justifyItems="center" alignItems="center">
                         <TextField label="Title" className={styles.mainLessonInput} value={title} onChange={(e) => setTitle(e.target.value)} />
+                        <>
+                            <br></br>
+                            <br></br>
+                        </>
                         <TextField label="Youtube Video ID" className={styles.mainLessonInput} value={mediaLink} onChange={(e) => setMediaLink(e.target.value)} />
+                        <>
+                            <br></br>
+                            <br></br>
+                        </>
                         <TextField label="Content" className={styles.mainLessonInput} multiline value={lessonContent} onChange={(e) => setLessonContent(e.target.value)} maxRows={25} />
-
+                        <>
+                            <br></br>
+                            <br></br>
+                        </>
                         <Typography variant="h5">Practice Questions</Typography>
                         {practiceQuestions.map((question, index) => (
                             <div key={index} className={styles.questionContainer}>
@@ -164,6 +177,10 @@ export default function Lesson() {
                                     value={question.questionName}
                                     onChange={(e) => handleQuestionChange(index, 'questionName', e.target.value)}
                                 />
+                                <>
+                                    <br></br>
+                                </>
+
                                 <TextField
                                     label="Difficulty Level"
                                     fullWidth
@@ -171,6 +188,9 @@ export default function Lesson() {
                                     value={question.questionDifficulty}
                                     onChange={(e) => handleQuestionChange(index, 'questionDifficulty', e.target.value)}
                                 />
+                                <>
+                                    <br></br>
+                                </>
                                 <TextField
                                     label="Answer"
                                     fullWidth
@@ -178,6 +198,9 @@ export default function Lesson() {
                                     value={question.answerContent}
                                     onChange={(e) => handleQuestionChange(index, 'answerContent', e.target.value)}
                                 />
+                                <>
+                                    <br></br>
+                                </>
                                 <TextField
                                     label="Link"
                                     fullWidth
@@ -185,6 +208,9 @@ export default function Lesson() {
                                     value={question.questionLink}
                                     onChange={(e) => handleQuestionChange(index, 'questionLink', e.target.value)}
                                 />
+                                <>
+                                    <br></br>
+                                </>
                                 <Button onClick={() => handleRemoveQuestion(index)} color="secondary">
                                     Remove Question
                                 </Button>
@@ -410,13 +436,31 @@ export default function Lesson() {
                 'Authorization': `Bearer ${token}`
             }
         };
-        await backendCall.delete('/api/v1/deleteLesson?lessonId='+lessonId, config).then((res) => {
+        await backendCall.delete('/api/v1/deleteLesson?lessonId=' + lessonId, config).then((res) => {
             getAllLessons(token);
             setLessonData(null);
         }).catch((err) => {
-            
+
         });
     }
+
+
+    const StyledListItem = styled(ListItem)({
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: theme => theme.palette.action.hover,
+        },
+    });
+
+    const LessonTitle = styled(ListItemText)({
+        marginRight: theme => theme.spacing(2),
+    });
+
+    const StyledIconButton = styled(IconButton)({
+        '&:hover': {
+            backgroundColor: theme => theme.palette.action.hover,
+        },
+    });
 
 
 
@@ -443,11 +487,20 @@ export default function Lesson() {
                     <Paper elevation={3} style={{ height: '100%', overflow: 'auto' }}>
                         <List>
                             {lessons != '' && lessons.map((lesson) => (
-                                <ListItem key={lesson.id} onClick={() => handleLessonClick(lesson.id)}>
-                                    <ListItemText primary={lesson.title} onClick={() => { getLesson(token, lesson.id) }} className={styles.lessonTitle} />
-                                    {isEditable && <Button onClick={()=>{editLesson(lesson.id)}}>edit</Button>}
-                                    {isEditable && <Button onClick={()=>{deleteLesson(lesson.id)}}>Delete</Button>}
-                                </ListItem>
+                                <StyledListItem key={lesson.id} selected={(lessonData!=null && lessonData.title==lesson.title)} onClick={() => handleLessonClick(lesson.id)}>
+                                    <LessonTitle primary={lesson.title} onClick={() => getLesson(token, lesson.id)} />
+                                    {isEditable && (
+                                        <ListItemSecondaryAction>
+                                            <StyledIconButton onClick={() => editLesson(lesson.id)} size="small">
+                                                <EditIcon />
+                                            </StyledIconButton>
+                                            <StyledIconButton onClick={() => deleteLesson(lesson.id)} size="small">
+                                                <DeleteIcon />
+                                            </StyledIconButton>
+                                        </ListItemSecondaryAction>
+                                    )}
+                                </StyledListItem>
+
                             ))}
                         </List>
                     </Paper>
@@ -455,15 +508,25 @@ export default function Lesson() {
 
                 <Grid item xs={9}>
                     {
+                        lessonData == null &&
+                        <Paper elevation={3} style={{ padding: '20px' }} className={styles.lessonContentContainer}>
+                            <Typography > Select a Lesson to view its content</Typography>
+                        </Paper>
+
+                    }
+                    {
                         lessonData != null &&
                         <Paper elevation={3} style={{ padding: '20px' }} className={styles.lessonContentContainer}>
                             <Typography variant='h4'>{lessonData.title}</Typography>
+
                             {
                                 lessonData.contents.map((content) => {
                                     return (
                                         <>
                                             <iframe className={styles.lessonVideo} src={'https://www.youtube.com/embed/' + content.mediaLink}></iframe>
+                                            <hr></hr>
                                             <Box>{content.data}</Box>
+                                            <hr></hr>
                                             <TableContainer component={Paper}>
                                                 <Table>
                                                     <TableHead>
@@ -474,6 +537,7 @@ export default function Lesson() {
                                                             <TableCell>Action</TableCell>
                                                         </TableRow>
                                                     </TableHead>
+
                                                     <TableBody>
                                                         {content.practiceQuestions.map((question) => (
                                                             <>
