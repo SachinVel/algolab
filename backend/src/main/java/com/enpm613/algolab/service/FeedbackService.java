@@ -4,6 +4,7 @@ import com.enpm613.algolab.entity.Course;
 import com.enpm613.algolab.entity.Feedback;
 import com.enpm613.algolab.entity.User;
 import com.enpm613.algolab.repository.CourseRepository;
+import com.enpm613.algolab.repository.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,11 @@ public class FeedbackService {
     @Autowired
     private CourseRepository courseRepository;
 
+    @Autowired
+    private CourseService courseService;
+    @Autowired
+    private UserRepository userRepository;
+
     public Feedback addFeedback(Feedback feedback, User user, String courseId){
             Course course = courseRepository.findByCourseId(courseId);
             Feedback newFeedback = new Feedback(user,course, course.getInstructor(), feedback.getContent());
@@ -32,6 +38,11 @@ public class FeedbackService {
 
     public List<Feedback> viewFeedbackByCourse(String courseId){
         return feedbackRepository.findByCourse(courseId);
+    }
+
+    public List<Feedback> viewFeedbackByInstructor(String instructorId){
+        User instructor = userRepository.findByUsername(instructorId).get();
+        return feedbackRepository.findByInstructor(instructor);
     }
 
 }

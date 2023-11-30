@@ -54,11 +54,19 @@ public class FeedbackController {
         return feedbackList;
     }
 
-    @GetMapping("/viewCourseFeedback/{id}")
+    @GetMapping("/viewCourseFeedback/{courseId}")
     @PreAuthorize("hasAnyAuthority('INSTRUCTOR','ADMIN')")
     @ResponseBody
     public List<Feedback> getFeedbackByCourse(@AuthenticationPrincipal UserDetails user, @PathVariable String courseId) {
         List<Feedback> feedbackList = feedbackService.viewFeedbackByCourse(courseId);
+        return feedbackList;
+    }
+
+    @GetMapping("/viewCourseFeedbackByInstructor/{instructorId}")
+    @PreAuthorize("hasAnyAuthority('INSTRUCTOR')")
+    @ResponseBody
+    public List<Feedback> getFeedbackByInstructor(@AuthenticationPrincipal UserDetails user, @PathVariable String instructorId) {
+        List<Feedback> feedbackList = feedbackService.viewFeedbackByCourse(instructorId);
         return feedbackList;
     }
 
