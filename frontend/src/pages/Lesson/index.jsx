@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, InputLabel, List, ListItem, ListItemText, MenuItem, Paper, Select, Snackbar, Stack, TextField, ToggleButtonGroup, Typography, styled, } from "@mui/material";
+import { Alert, Box, Button, Collapse, Dialog, DialogActions, DialogContent, DialogTitle, Grid, InputLabel, List, ListItem, ListItemText, MenuItem, Paper, Select, Snackbar, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ToggleButtonGroup, Typography, styled, } from "@mui/material";
 import styles from './lesson.module.css';
 import Header from '../../components/Header';
 import AddIcon from '@mui/icons-material/Add';
@@ -10,6 +10,213 @@ import { useParams } from 'react-router-dom';
 
 
 export default function Lesson() {
+
+
+    const LessonDialog = ({ open, onClose,  onError, isUpdate }) => {
+
+        const [title, setTitle] = useState();
+        const [lessonContent, setLessonContent] = useState('');
+        const [mediaLink, setMediaLink] = useState('');
+        const [practiceQuestions, setPracticeQuestions] = useState([]);
+
+
+        const handleClose = () => {
+            onClose();
+        };
+
+        const handleAddQuestion = () => {
+            setPracticeQuestions((prevQuestions) => [
+                ...prevQuestions,
+                { questionName: '', questionDifficulty: '', answerContent: '', questionLink: '' },
+            ]);
+        };
+
+        const handleRemoveQuestion = (index) => {
+            setPracticeQuestions((prevQuestions) => {
+                const updatedQuestions = [...prevQuestions];
+                updatedQuestions.splice(index, 1);
+                return updatedQuestions;
+            });
+        };
+
+        const handleQuestionChange = (index, fieldName, value) => {
+            setPracticeQuestions((prevQuestions) => {
+                const updatedQuestions = [...prevQuestions];
+                updatedQuestions[index] = {
+                    ...updatedQuestions[index],
+                    [fieldName]: value,
+                };
+                return updatedQuestions;
+            });
+        };
+
+        useEffect(() => {
+            if (lessonData !== null && isUpdate) {
+                setTitle(lessonData.title);
+                let content = lessonData.contents[0];
+                if (content !== null) {
+                    setPracticeQuestions(content.practiceQuestions);
+                    setLessonContent(content.data);
+                    setMediaLink(content.mediaLink);
+                }
+
+            }
+        },[]);
+
+        const isValid = () => {
+            // Validate title length
+            if (title.length > 100) {
+                onError('Title should be less than 100 characters');
+                return false;
+            }
+
+            // Validate media link format (simple check for URL format)
+            // const mediaLinkPattern = /^(http|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
+            // if (!mediaLinkPattern.test(mediaLink)) {
+            //     onError('Invalid media link format');
+            //     return false;
+            // }
+
+            // Validate content length
+            if (lessonContent.split(' ').length > 500) {
+                onError('Content should not be more than 500 words');
+                return false;
+            }
+
+            // Validate practice questions
+            for (const question of practiceQuestions) {
+                if (
+                    question.questionName.trim() === '' ||
+                    question.questionDifficulty.trim() === '' ||
+                    question.answerContent.trim() === '' ||
+                    question.questionLink.trim() === ''
+                ) {
+                    onError('All practice question fields should be filled');
+                    return false;
+                }
+            }
+
+            // All validations passed
+            return true;
+        };
+
+        const handleSubmit = async () => {
+            if (isValid()) {
+                let data = {
+                    courseId: course.id,
+                    title: title,
+                    contents: [{
+                        data: lessonContent,
+                        mediaLink: mediaLink,
+                        practiceQuestions: practiceQuestions
+                    }]
+                }
+                const response = await backendCall.post('/api/v1/createLesson', data, {
+                    headers: {
+                        'Authorization': 'Bearer ' + token, // Replace with your actual access token
+                    },
+                });
+                getAllLessons(token);
+                onClose()
+            }
+        }
+
+        const handleUpdate = async () => {
+            if (isValid()) {
+                let data = {
+                    ...lessonData,
+                    courseId: course.id,
+                    title: title,
+                    contents: [{
+                        ...lessonData.contents[0],
+                        data: lessonContent,
+                        mediaLink: mediaLink,
+                        practiceQuestions: practiceQuestions
+                    }]
+                }
+                const response = await backendCall.put('/api/v1/updateLesson', data, {
+                    headers: {
+                        'Authorization': 'Bearer ' + token, // Replace with your actual access token
+                    },
+                });
+                getAllLessons(token);
+                getLesson(token,lessonData.id);
+                onClose()
+            }
+        }
+
+        return (
+            <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+                <DialogTitle>Create Lesson</DialogTitle>
+                <DialogContent>
+                    <Stack flexDirection="column" justifyItems="center" alignItems="center">
+                        <TextField label="Title" className={styles.mainLessonInput} value={title} onChange={(e) => setTitle(e.target.value)} />
+                        <TextField label="Youtube Video ID" className={styles.mainLessonInput} value={mediaLink} onChange={(e) => setMediaLink(e.target.value)} />
+                        <TextField label="Content" className={styles.mainLessonInput} multiline value={lessonContent} onChange={(e) => setLessonContent(e.target.value)} maxRows={25} />
+
+                        <Typography variant="h5">Practice Questions</Typography>
+                        {practiceQuestions.map((question, index) => (
+                            <div key={index} className={styles.questionContainer}>
+                                <TextField
+                                    label="Question Name"
+                                    fullWidth
+                                    margin="normal"
+                                    value={question.questionName}
+                                    onChange={(e) => handleQuestionChange(index, 'questionName', e.target.value)}
+                                />
+                                <TextField
+                                    label="Difficulty Level"
+                                    fullWidth
+                                    margin="normal"
+                                    value={question.questionDifficulty}
+                                    onChange={(e) => handleQuestionChange(index, 'questionDifficulty', e.target.value)}
+                                />
+                                <TextField
+                                    label="Answer"
+                                    fullWidth
+                                    margin="normal"
+                                    value={question.answerContent}
+                                    onChange={(e) => handleQuestionChange(index, 'answerContent', e.target.value)}
+                                />
+                                <TextField
+                                    label="Link"
+                                    fullWidth
+                                    margin="normal"
+                                    value={question.questionLink}
+                                    onChange={(e) => handleQuestionChange(index, 'questionLink', e.target.value)}
+                                />
+                                <Button onClick={() => handleRemoveQuestion(index)} color="secondary">
+                                    Remove Question
+                                </Button>
+                            </div>
+                        ))}
+                        <Button onClick={handleAddQuestion} color="primary">
+                            Add Question
+                        </Button>
+
+                    </Stack>
+                </DialogContent>
+                <DialogActions>
+                    {
+                        isUpdate &&
+                        <Button onClick={handleUpdate} color="primary">
+                            Update
+                        </Button>
+                    }
+                    {
+                        !isUpdate &&
+                        <Button onClick={handleSubmit} color="primary">
+                            Submit
+                        </Button>
+                    }
+
+                    <Button onClick={handleClose} color="secondary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
+    };
 
     const { courseId } = useParams();
 
@@ -27,8 +234,10 @@ export default function Lesson() {
 
     const [course, setCourse] = useState(null);
     const [lessons, setLessons] = useState([]);
+    const [editLessonContent, setEditLessonContent] = useState(null);
     const [lessonData, setLessonData] = useState(null);
     const [isEditable, setIsEditable] = useState(false);
+    const [isUpdate, setIsUpdate] = useState(false);
     const [role, setRole] = useState('');
     const [token, setToken] = useState('');
 
@@ -40,6 +249,16 @@ export default function Lesson() {
 
     const [userCourses, setUserCourses] = useState([]);
     const [allCourses, setAllCourses] = useState([]);
+    const [openAnswer, setOpenAnswer] = useState({});
+
+    const handleToggleAnswer = (questionId) => {
+        console.log('prevOpenAns : ', openAnswer);
+        setOpenAnswer((prevOpenAnswer) => ({
+            ...prevOpenAnswer,
+            [questionId]: !prevOpenAnswer[questionId],
+        }));
+    };
+
 
     const handleImageChange = (e) => {
         setImage(e.target.files[0]);
@@ -50,6 +269,7 @@ export default function Lesson() {
     };
 
     const handleClickOpen = () => {
+        setIsUpdate(false);
         setOpen(true);
     };
 
@@ -75,7 +295,7 @@ export default function Lesson() {
 
         getCourse(token);
         getAllLessons(token);
-        
+
 
     }, []);
 
@@ -122,6 +342,12 @@ export default function Lesson() {
         return isOwner;
     }
 
+    const showErrorToast = (message) => {
+        setMessage(message);
+        setSnackType('error');
+        setIsSnackbarOpen(true);
+    }
+
 
     const getLesson = async (token, lessonId) => {
         let config = {
@@ -137,9 +363,7 @@ export default function Lesson() {
             console.log('login error : ', err);
             if (err.response && err.response.data && err.response.data.error) {
                 console.log('err : ', err);
-                setMessage(err.response.data.error);
-                setSnackType('error');
-                setIsSnackbarOpen(true);
+                showErrorToast(err.response.data.error)
             }
         });
     }
@@ -174,25 +398,57 @@ export default function Lesson() {
 
     const handleLessonClick = (lessonId) => {
         // setLessonData(lesson);
-      };
+    };
+
+    const editLesson = async (lessonId) => {
+        await getLesson(token, lessonId);
+        setIsUpdate(true);
+        setOpen(true);
+    }
+    const deleteLesson = async (lessonId) => {
+
+        let config = {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        };
+        await backendCall.delete('/api/v1/deleteLesson?lessonId='+lessonId, config).then((res) => {
+            getAllLessons(token);
+            setLessonData(null);
+        }).catch((err) => {
+            
+        });
+    }
+
 
 
 
     return (
         <>
             <Header />
+            <LessonDialog open={open} onClose={handleClose} onError={showErrorToast} isUpdate={isUpdate} />
             {
                 course !== null &&
                 <h1>{course.title}</h1>
             }
 
+            {
+                (isEditable) &&
+                <Stack flexDirection="row" justifyContent="right" sx={{ padding: '20px' }}>
+                    <Button variant='contained' onClick={handleClickOpen}>
+                        <AddIcon /> Lesson
+                    </Button>
+                </Stack>
+            }
             <Grid container spacing={2}>
                 <Grid item xs={3}>
                     <Paper elevation={3} style={{ height: '100%', overflow: 'auto' }}>
                         <List>
-                            {lessons!='' && lessons.map((lesson) => (
+                            {lessons != '' && lessons.map((lesson) => (
                                 <ListItem key={lesson.id} onClick={() => handleLessonClick(lesson.id)}>
-                                    <ListItemText primary={lesson.title} />
+                                    <ListItemText primary={lesson.title} onClick={() => { getLesson(token, lesson.id) }} className={styles.lessonTitle} />
+                                    {isEditable && <Button onClick={()=>{editLesson(lesson.id)}}>edit</Button>}
+                                    {isEditable && <Button onClick={()=>{deleteLesson(lesson.id)}}>Delete</Button>}
                                 </ListItem>
                             ))}
                         </List>
@@ -200,9 +456,63 @@ export default function Lesson() {
                 </Grid>
 
                 <Grid item xs={9}>
-                    <Paper elevation={3} style={{ padding: '20px' }}>
-                        
-                    </Paper>
+                    {
+                        lessonData != null &&
+                        <Paper elevation={3} style={{ padding: '20px' }} className={styles.lessonContentContainer}>
+                            <Typography variant='h4'>{lessonData.title}</Typography>
+                            {
+                                lessonData.contents.map((content) => {
+                                    return (
+                                        <>
+                                            <iframe className={styles.lessonVideo} src={'https://www.youtube.com/embed/' + content.mediaLink}></iframe>
+                                            <Box>{content.data}</Box>
+                                            <TableContainer component={Paper}>
+                                                <Table>
+                                                    <TableHead>
+                                                        <TableRow>
+                                                            <TableCell>Question Name</TableCell>
+                                                            <TableCell>Difficulty</TableCell>
+                                                            <TableCell>Link</TableCell>
+                                                            <TableCell>Action</TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {content.practiceQuestions.map((question) => (
+                                                            <>
+                                                                <TableRow key={question.id}>
+                                                                    <TableCell>{question.questionName}</TableCell>
+                                                                    <TableCell>{question.questionDifficulty}</TableCell>
+                                                                    <TableCell>{question.questionLink}</TableCell>
+                                                                    <TableCell>
+                                                                        <Button onClick={() => handleToggleAnswer(question.id)}>
+                                                                            {
+                                                                                openAnswer[question.id] ? "Hide" : "Show"
+                                                                            } Answer
+                                                                        </Button>
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                                <TableRow key={question.id + 'ans'}>
+                                                                    <TableCell colSpan={4} align='center'>
+                                                                        <Collapse in={openAnswer[question.id]}>
+                                                                            <Typography>{question.answerContent}</Typography>
+                                                                        </Collapse>
+                                                                    </TableCell>
+                                                                </TableRow>
+
+                                                            </>
+                                                        ))}
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
+                                        </>
+
+                                    )
+                                })
+                            }
+
+                        </Paper>
+                    }
+
                 </Grid>
             </Grid>
 

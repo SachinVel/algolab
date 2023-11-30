@@ -13,6 +13,7 @@ const Logout = lazy(() => import("./pages/Logout"));
 const Course = lazy(() => import("./pages/Course"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Lesson = lazy(() => import("./pages/Lesson"));
+const Issue = lazy(() => import("./pages/Issue"));
 
 function App() {
 
@@ -48,6 +49,7 @@ function App() {
               <Route path="/logout" exact element={<Logout setLoggedIn={setLoggedIn} />} />
               <Route path="/course" exact element={loggedIn ? <Course /> : <Navigate to='/login' state={{ showLoginNecessary: true }} />} />
               <Route path="/profile" exact element={loggedIn ? <Profile /> : <Navigate to='/login' state={{ showLoginNecessary: true }} />} />
+              <Route path="/issue" exact element={loggedIn ? <Issue /> : <Navigate to='/login' state={{ showLoginNecessary: true }} />} />
               <Route path="/lesson/:courseId" exact element={loggedIn ? <Lesson /> : <Navigate to='/login' state={{ showLoginNecessary: true }} />} />
             </Routes>
           </Suspense>
