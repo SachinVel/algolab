@@ -1,20 +1,204 @@
 
 import React, { useEffect, useState } from 'react';
-import { Alert, Box, Button, CircularProgress, Snackbar, Stack, Typography } from "@mui/material";
+import { Alert, Box, Button, Card, CardContent, CardMedia, Dialog, DialogActions, DialogContent, DialogTitle, Grid, InputLabel, MenuItem, Select, Snackbar, Stack, TextField, ToggleButtonGroup, Typography, styled, } from "@mui/material";
 import styles from './course.module.css';
 import Header from '../../components/Header';
 import AddIcon from '@mui/icons-material/Add';
+import MuiToggleButton from "@mui/material/ToggleButton";
+import backendCall from '../../utils/network';
+
+
+const s3Prefix = process.env.REACT_APP_S3_PREFIX;
 
 export default function Course() {
 
-    const [courses, setCourses] = useState([]);
+    const CourseTile = ({ course , isDelete}) => {
+
+        const [imageUrl, setImageUrl] = useState('');
+        useEffect(() => {
+            setImageUrl(s3Prefix + '/course-images/' + course.id);
+        }, []);
+
+        let config = {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        };
+
+        const handleDeleteCourse = async ()=>{
+            await backendCall.delete('/api/v1/deleteCourse?courseId='+course.id, config).then((res) => {
+                console.log('getUserDetails response : ', res);
+                getUserCourses(token);
+                getAllCourses(token);
+            }).catch((err) => {
+                
+            });
+        }
+
+        const handleEditCourse = async ()=>{
+            window.location = `/lesson/${course.id}`;
+        }
+
+        return (
+            <Card>
+                <CardMedia
+                    component="img"
+                    height="50%"
+                    image={imageUrl}
+                    alt={course.title}
+                />
+                <CardContent>
+                    <Typography variant="h6">{course.title}</Typography>
+                    <Typography variant="body2" color="textSecondary">{course.description}</Typography>
+                    <Typography variant="body2" color="textSecondary">Difficulty: {course.difficulty}</Typography>
+                    { isDelete && <Button color='error' onClick={handleDeleteCourse}>Delete</Button>}
+                    { isDelete && <Button onClick={handleEditCourse}>Edit</Button>}
+                </CardContent>
+            </Card>
+        );
+    };
+
+    const ToggleButton = styled(MuiToggleButton)({
+        "&.Mui-selected, &.Mui-selected:hover": {
+            color: "white",
+            backgroundColor: '#295bcc',
+        }
+    });
+
+    const [message, setMessage] = useState('');
+    const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+    const [snackType, setSnackType] = useState(false);
+    
     const [role, setRole] = useState('');
+    const [token, setToken] = useState('');
+    const [subMenu, setSubMenu] = useState('allCourse');
+
+
+    const [open, setOpen] = useState(false);
+    const [title, setTitle] = useState('');
+    const [difficulty, setDifficulty] = useState('');
+    const [description, setDescription] = useState('');
+    const [image, setImage] = useState(null);
+
+    const [userCourses, setUserCourses] = useState([]);
+    const [allCourses, setAllCourses] = useState([]);
+
+    const handleImageChange = (e) => {
+        setImage(e.target.files[0]);
+    };
+
+    const handleSubmit = async () => {
+
+        if (image && image.size > 1024 * 1024) {
+            setMessage('The image size is large. Try other image');
+            setSnackType('error');
+            setIsSnackbarOpen(true);
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', image);
+        formData.append('title', title);
+        formData.append('difficulty', difficulty);
+        formData.append('description', description);
+
+        try {
+            const response = await backendCall.post('/api/v1/createCourse', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': 'Bearer ' + token, // Replace with your actual access token
+                },
+            });
+            getAllCourses(token);
+            getUserCourses(token);
+            console.log(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+
+        handleClose();
+    };
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     useEffect(() => {
         let role = window.localStorage.getItem('role');
+        let token = window.localStorage.getItem('token');
+        console.log('token : ', token)
+        setToken(token);
+        if (token == null || token == '') {
+            window.localStorage.removeItem('token');
+            window.localStorage.removeItem('role');
+            window.location = '/login';
+        }
         setRole(role);
+        if (role == 'INSTRUCTOR') {
+            getUserCourses(token);
+        }
+        getAllCourses(token);
     }, []);
 
+    const handleSubMenuChange = (event) => {
+        setSubMenu(event.target.value);
+    }
+
+    const getUserCourses = async (token) => {
+
+        let config = {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        };
+
+        await backendCall.get('/api/v1/userCourses', config).then((res) => {
+            console.log('getUserDetails response : ', res);
+            let userData = res.data;
+            setUserCourses(userData);
+        }).catch((err) => {
+            console.log('login error : ', err);
+            if (err.response && err.response.data && err.response.data.error) {
+                console.log('err : ', err);
+                setMessage(err.response.data.error);
+                setSnackType('error');
+                setIsSnackbarOpen(true);
+            }
+        });
+    }
+
+    const getAllCourses = async (token) => {
+
+        let config = {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        };
+
+        await backendCall.get('/api/v1/allCourses', config).then((res) => {
+            console.log('getUserDetails response : ', res);
+            let userData = res.data;
+            setAllCourses(userData);
+        }).catch((err) => {
+            console.log('login error : ', err);
+            if (err.response && err.response.data && err.response.data.error) {
+                console.log('err : ', err);
+                setMessage(err.response.data.error);
+                setSnackType('error');
+                setIsSnackbarOpen(true);
+            }
+        });
+    }
+
+    
+
+    const hanldeSnackbarClose = () => {
+        setIsSnackbarOpen(false);
+    }
 
 
 
@@ -22,13 +206,119 @@ export default function Course() {
         <>
             <Header />
             <Stack className={styles.bodyContainer}>
-                <Stack flexDirection="row" justifyContent="right" sx={{ padding: '20px' }}>
-                    <Button variant='contained'>
-                        <AddIcon /> Course
-                    </Button>
-                </Stack>
 
+                <Dialog open={open} onClose={handleClose}>
+                    <DialogTitle>Create Course</DialogTitle>
+                    <DialogContent>
+                        <TextField label="Title" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth />
+                        <br></br>
+                        <InputLabel id="dif-label">Difficulty</InputLabel>
+                        <Select
+                            labelId="dif-label"
+                            value={difficulty}
+                            sx={{ width: "400px" }}
+                            onChange={(e) => setDifficulty(e.target.value)}
+                            placeholder='Difficulty'
+                        >
+                            <MenuItem value="">Select Difficulty</MenuItem>
+                            <MenuItem value='EASY'>EASY</MenuItem>
+                            <MenuItem value='AVERAGE'>AVERAGE</MenuItem>
+                            <MenuItem value='HARD'>HARD</MenuItem>
+                        </Select>
+                        <br></br>
+                        <TextField label="Description" value={description} onChange={(e) => setDescription(e.target.value)} fullWidth />
+                        <br></br>
+                        <input type="file" onChange={handleImageChange} />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={handleSubmit} color="primary">
+                            Submit
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+                {
+                    (role == 'INSTRUCTOR') &&
+                    <Stack flexDirection="row" justifyContent="right" sx={{ padding: '20px' }}>
+                        <Button variant='contained' onClick={handleClickOpen}>
+                            <AddIcon /> Course
+                        </Button>
+                    </Stack>
+                }
+
+
+                {
+                    role == 'INSTRUCTOR' &&
+                    <Stack flexDirection="row" justifyContent="center" sx={{ padding: '20px' }}>
+                        <ToggleButtonGroup
+                            value={subMenu}
+                            exclusive
+                            onChange={handleSubMenuChange}
+                        >
+                            <ToggleButton value="userCourse">
+                                Your Course
+                            </ToggleButton>
+                            <ToggleButton value="allCourse">
+                                All course
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </Stack>
+                }
+
+                {
+                    role == 'INSTRUCTOR' && subMenu == 'userCourse' &&
+                    <Grid container spacing={2} className={styles.courseGridContainer}>
+                        {userCourses.map((course) => (
+                            <Grid item xs={12} sm={6} md={4} lg={3} key={course.id}>
+                                <CourseTile course={course} isDelete={true}/>
+
+                            </Grid>
+                        ))}
+                    </Grid>
+                }
+                {
+                    role == 'ADMIN' && subMenu == 'allCourse' &&
+                    <Grid container spacing={2} className={styles.courseGridContainer}>
+                        {allCourses.map((course) => (
+                            <Grid item xs={12} sm={6} md={4} lg={3} key={course.id}>
+                                <CourseTile course={course} isDelete={true}/>
+                            </Grid>
+                        ))}
+                    </Grid>
+                }
+                {
+                    subMenu == 'allCourse' && role != 'ADMIN' &&
+                    <Grid container spacing={2} className={styles.courseGridContainer}>
+                        {allCourses.map((course) => (
+                            <Grid item xs={12} sm={6} md={4} lg={3} key={course.id}>
+                                <CourseTile course={course}/>
+                            </Grid>
+                        ))}
+                    </Grid>
+                }
             </Stack>
+
+            <Snackbar
+                open={isSnackbarOpen}
+                autoHideDuration={4000}
+                onClose={hanldeSnackbarClose}
+                disableWindowBlurListener={true}
+            >
+                <Box>
+                    {
+                        message != '' &&
+                        <>
+                            <Alert onClose={hanldeSnackbarClose} severity={snackType}>
+                                {message}
+                            </Alert>
+                            <br></br>
+                        </>
+                    }
+                </Box>
+
+            </Snackbar>
         </>
     );
 }

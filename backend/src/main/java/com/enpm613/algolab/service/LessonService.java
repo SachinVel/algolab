@@ -53,7 +53,7 @@ public class LessonService {
 
 
 
-    public LessonPage getLesson(Long id) {
+    public LessonPage getLesson(String id) {
         return lessonRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lesson not found."));
 
@@ -62,7 +62,7 @@ public class LessonService {
     }
 
     public LessonPage updateLesson(LessonPage updatedLessonPage) {
-        Long lessonPageId = updatedLessonPage.getId();
+        String lessonPageId = updatedLessonPage.getId();
 
         if (lessonRepository.existsById(lessonPageId)) {
             // Update LessonPage
@@ -122,7 +122,7 @@ public class LessonService {
     }
 
 
-    public void deleteLesson(Long id) {
+    public void deleteLesson(String id) {
         LessonPage existingLesson = lessonRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lesson not found."));
 
@@ -182,7 +182,7 @@ public class LessonService {
         practiceQuestionRepository.delete(existingPracticeQuestion);
     }
 
-    public LessonPage getLessonContent(Long lessonId){
+    public LessonPage getLessonContent(String lessonId){
 
         return lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new RuntimeException("LessonContent not found"));
@@ -190,7 +190,7 @@ public class LessonService {
     }
 
 
-    public List<LessonPage> getLessonPages(Long courseId)
+    public List<LessonPage> getLessonPages(String courseId)
     {
         List<LessonPage> lessonPages = lessonRepository.findByCourseId(courseId);
 
