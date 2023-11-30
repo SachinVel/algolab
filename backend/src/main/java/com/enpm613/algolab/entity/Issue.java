@@ -3,6 +3,7 @@ package com.enpm613.algolab.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
@@ -10,32 +11,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Data
 public class Issue {
-    private String user;
-    private String role;
-    private String issue;
-
-    public String getUser() {
-        return user;
+    @Id
+    String id;
+    private User user;
+    private Severity severity;
+    private String name;
+    private String description;
+    public enum Severity {
+        CRITICAL,
+        MODERATE,
+        MINOR
     }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getIssue() {
-        return issue;
-    }
-
-    public void setIssue(String issue) {
-        this.issue = issue;
-    }
-
 }
