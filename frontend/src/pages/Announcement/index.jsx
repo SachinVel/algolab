@@ -46,10 +46,7 @@ export default function Announcement({}) {
         }
         setRole(role);
         getUserDetails(token);
-
-        if (role == 'ADMIN') {
-            getAllAnnouncementsByCourse(token);
-        }
+        getAllAnnouncementsByCourse(token);
     }, []);
 
     const getUserDetails = async (token) => {
