@@ -60,6 +60,10 @@ public class CourseService {
 
     public Course createCourse(CourseDTO newCourse, User instructor) throws IOException{
 
+        Course existingCourse = courseRepository.findByTitle(newCourse.getTitle());
+        if(existingCourse != (null)){
+            throw new RuntimeException("Course already exists");
+        }
         MultipartFile imageFile = newCourse.getImage();
         Course course = new Course(null,newCourse.getTitle(),newCourse.getDifficulty(),newCourse.getDescription(),instructor);
         Course createdCourse = courseRepository.save(course);
