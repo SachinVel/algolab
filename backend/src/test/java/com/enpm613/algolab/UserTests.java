@@ -36,9 +36,15 @@ public class UserTests {
         user.setPassword("testStudent@1234");
         user.setRole(STUDENT);
         user.setBio("test");
+        User savedUser = new User();
         if (userService.isValidUsername(user.getUsername())) {
-            userService.registerUser(user);
+            savedUser = userService.registerUser(user);
+        } else{
+            savedUser = userService.getUserByUsername(user.getUsername());
         }
+        User checkUser = userService.getUserByUsername(user.getUsername());
+        assertEquals(savedUser, checkUser);
+        userService.deleteUser(user.getId());
     }
 
         @Test
@@ -52,9 +58,15 @@ public class UserTests {
             user.setPassword("testInstructor@1234");
             user.setRole(INSTRUCTOR);
             user.setBio("testInstructor");
+            User savedUser = new User();
             if (userService.isValidUsername(user.getUsername())) {
-                userService.registerUser(user);
+                savedUser = userService.registerUser(user);
+            }else{
+                savedUser = userService.getUserByUsername(user.getUsername());
             }
+            User checkUser = userService.getUserByUsername(user.getUsername());
+            assertEquals(savedUser, checkUser);
+            userService.deleteUser(user.getId());
         }
 
     @Test
@@ -68,15 +80,19 @@ public class UserTests {
         user.setPassword("testAdmin@1234");
         user.setRole(ADMIN);
         user.setBio("testAdmin");
+        User savedUser = new User();
         if (userService.isValidUsername(user.getUsername())) {
-            User savedUser = userService.registerUser(user);
+            savedUser = userService.registerUser(user);
+        }else{
+            savedUser = userService.getUserByUsername(user.getUsername());
         }
+        User checkUser = userService.getUserByUsername(user.getUsername());
+        assertEquals(savedUser, checkUser);
+        userService.deleteUser(user.getId());
     }
 
     @Test
     public void testUpdateUser() {
-//        User user = new User("username", "password", "email@example.com");
-//        User updatedUser = new User("username", "newPassword", "email@example.com");
         //get student user details
         User user = new User();
         user.setFirstName("testStudent1");
@@ -108,9 +124,22 @@ public class UserTests {
     public void testDeleteUser() {
 
         User user = new User();
-        user = userService.getUserByUsername("testInstructor");
-        System.out.println(user);
-        userService.deleteUser(user.getId());
+        user.setFirstName("testInstructor");
+        user.setLastName("test");
+        user.setEmail("testInstructor@email.com");
+        user.setUsername("testInstructor");
+        user.setPassword("testInstructor@1234");
+        user.setRole(INSTRUCTOR);
+        user.setBio("testInstructor");
+        User savedUser = new User();
+        if (userService.isValidUsername(user.getUsername())) {
+            savedUser = userService.registerUser(user);
+        }else{
+            savedUser = userService.getUserByUsername(user.getUsername());
+        }
+
+
+        userService.deleteUser(savedUser.getId());
     }
 
     @Test
