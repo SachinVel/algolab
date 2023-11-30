@@ -6,6 +6,7 @@ import com.enpm613.algolab.entity.Feedback;
 import com.enpm613.algolab.entity.User;
 import com.enpm613.algolab.repository.CourseRepository;
 import com.enpm613.algolab.repository.FeedbackRepository;
+import com.enpm613.algolab.repository.UserRepository;
 import com.enpm613.algolab.service.CourseService;
 import com.enpm613.algolab.service.FeedbackService;
 import com.enpm613.algolab.service.UserService;
@@ -13,8 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -42,37 +45,48 @@ public class FeedbackTests {
 
     @Autowired
     private FeedbackService feedbackService;
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
-    public void testSendCourseFeedback() {
+    public void testSendCourseFeedback() throws IOException {
         //get student user details
         User user = new User();
-        user.setFirstName("testFeedback");
+        user.setFirstName("testUserFeedback");
         user.setLastName("test");
         user.setEmail("test@email.com");
-        user.setUsername("testFeedback");
-        user.setPassword("testFeedback@1234");
+        user.setUsername("testUserFeedback");
+        user.setPassword("testUserFeedback@1234");
         user.setRole(STUDENT);
-        user.setBio("testFeedback");
+        user.setBio("testUserFeedback");
         userService.registerUser(user);
 
         // instructor
-//        User instructor = new User();
-//        instructor.setFirstName("testInstructor");
-//        instructor.setLastName("test");
-//        instructor.setEmail("testInstructor@email.com");
-//        instructor.setUsername("testInstructor");
-//        instructor.setPassword("testInstructor@1234");
-//        instructor.setRole(INSTRUCTOR);
-//        instructor.setBio("test");
-//        userService.registerUser(instructor);
-        User instructor = userService.getUserByUsername("barath98");
+        User instructor = new User();
+        instructor.setFirstName("testInstructorFeedback");
+        instructor.setLastName("test");
+        instructor.setEmail("testInstructorFeedback@email.com");
+        instructor.setUsername("testInstructorFeedback");
+        instructor.setPassword("testInstructorFeedback@1234");
+        instructor.setRole(INSTRUCTOR);
+        instructor.setBio("testInstructorFeedback");
+        userService.registerUser(instructor);
 
 
-        List<Course> course = courseService.getUserCourse(instructor);
+        FileInputStream fileInputStream = new FileInputStream("src/main/resources/image.jpg");
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("image", "image.jpg", "multipart/form-data", fileInputStream);
+        CourseDTO course = new CourseDTO();
+        course.setTitle("testCourse");
+        course.setDifficulty(EASY);
+        course.setDescription("Description");
+        course.setImage(mockMultipartFile);
+        Course newCourse = courseService.createCourse(course,instructor);
 
 
-        for(Course curCourse:course) {
+        List<Course> instructorCourses = courseService.getUserCourse(instructor);
+
+
+        for(Course curCourse:instructorCourses) {
             // Send feedback
             Feedback feedback = new Feedback(user, curCourse, curCourse.getInstructor(), "This course is challenging but rewarding.");
             Feedback savedFeedback = feedbackService.addFeedback(feedback, user, curCourse.getId());
@@ -81,6 +95,8 @@ public class FeedbackTests {
             assertEquals(savedFeedback.getContent(),"This course is challenging but rewarding.");
         }
         userService.deleteUser(user.getId());
+        userService.deleteUser(instructor.getId());
+        courseService.deleteCourse(newCourse.getId());
     }
 
     @Test
@@ -91,7 +107,18 @@ public class FeedbackTests {
 
     @Test
     public void viewFeedbackByCourse() throws IOException {
-        User instructor = userService.getUserByUsername("barath98");
+
+        // instructor
+        User instructor = new User();
+        instructor.setFirstName("testInstructorFeedback");
+        instructor.setLastName("test");
+        instructor.setEmail("testInstructorFeedback@email.com");
+        instructor.setUsername("testInstructorFeedback");
+        instructor.setPassword("testInstructorFeedback@1234");
+        instructor.setRole(INSTRUCTOR);
+        instructor.setBio("testInstructorFeedback");
+        userService.registerUser(instructor);
+
 
         FileInputStream fileInputStream = new FileInputStream("src/main/resources/image.jpg");
         MockMultipartFile mockMultipartFile = new MockMultipartFile("image", "image.jpg", "multipart/form-data", fileInputStream);
@@ -108,19 +135,44 @@ public class FeedbackTests {
         assertNotNull(feedbacks);
         for(Feedback feedback:feedbacks)
             assertEquals(feedback.getCourse(), course);
+
+        userService.deleteUser(instructor.getId());
+        courseService.deleteCourse(newCourse.getId());
     }
 
     @Test
-    public void viewFeedbackByInstructor() {
-        User instructor = userService.getUserByUsername("barath98");
+    public void viewFeedbackByInstructor() throws IOException {
+        // instructor
+        User instructor = new User();
+        instructor.setFirstName("testInstructorFeedback");
+        instructor.setLastName("test");
+        instructor.setEmail("testInstructorFeedback@email.com");
+        instructor.setUsername("testInstructorFeedback");
+        instructor.setPassword("testInstructorFeedback@1234");
+        instructor.setRole(INSTRUCTOR);
+        instructor.setBio("testInstructorFeedback");
+        userService.registerUser(instructor);
+
+
+        FileInputStream fileInputStream = new FileInputStream("src/main/resources/image.jpg");
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("image", "image.jpg", "multipart/form-data", fileInputStream);
+        CourseDTO course = new CourseDTO();
+        course.setTitle("testCourse");
+        course.setDifficulty(EASY);
+        course.setDescription("Description");
+        course.setImage(mockMultipartFile);
+        Course newCourse = courseService.createCourse(course,instructor);
         System.out.println(instructor);
-        List<Feedback> feedbacks = feedbackService.viewFeedbackByInstructor(instructor.getId());
+        List<Feedback> feedbacks = feedbackService.viewFeedbackByInstructor(instructor.getUsername());
         assertNotNull(feedbacks);
         for(Feedback feedback:feedbacks) {
             System.out.println(feedback.getInstructor());
             assertEquals(feedback.getInstructor(), instructor);
         }
+        userService.deleteUser(instructor.getId());
+        courseService.deleteCourse(newCourse.getId());
     }
+
 
     }
 
