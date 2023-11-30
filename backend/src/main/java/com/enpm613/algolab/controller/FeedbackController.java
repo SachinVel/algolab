@@ -1,14 +1,11 @@
 package com.enpm613.algolab.controller;
 
-import com.enpm613.algolab.entity.Course;
 import com.enpm613.algolab.entity.Feedback;
 import com.enpm613.algolab.entity.User;
 import com.enpm613.algolab.repository.FeedbackRepository;
 import com.enpm613.algolab.service.FeedbackService;
 import com.enpm613.algolab.service.UserService;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,14 +32,14 @@ public class FeedbackController {
         this.feedbackService = feedbackService;
     }
 
-    @PostMapping("/add/{id}")
+    @PostMapping("/add/{courseId}")
     @PreAuthorize("hasAuthority('STUDENT')")
     @ResponseBody
-    public ResponseEntity<Object> addFeedback(@AuthenticationPrincipal UserDetails user, @RequestBody Feedback feedback, @PathVariable String id){
+    public ResponseEntity<Object> addFeedback(@AuthenticationPrincipal UserDetails user, @RequestBody Feedback feedback, @PathVariable String courseId){
         try {
             String curUsername = user.getUsername();
             User curUser = userService.getUserByUsername(curUsername);
-            Feedback savedFeedback = feedbackService.addFeedback(feedback, curUser, id);
+            Feedback savedFeedback = feedbackService.addFeedback(feedback, curUser, courseId);
             return ResponseEntity.ok("true");
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -58,10 +55,10 @@ public class FeedbackController {
     }
 
     @GetMapping("/viewCourseFeedback/{id}")
-    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','STUDENT','ADMIN')")
+    @PreAuthorize("hasAnyAuthority('INSTRUCTOR','ADMIN')")
     @ResponseBody
-    public List<Feedback> getFeedbackByCourse(@AuthenticationPrincipal UserDetails user, @PathVariable String id) {
-        List<Feedback> feedbackList = feedbackService.viewFeedbackByCourse(id);
+    public List<Feedback> getFeedbackByCourse(@AuthenticationPrincipal UserDetails user, @PathVariable String courseId) {
+        List<Feedback> feedbackList = feedbackService.viewFeedbackByCourse(courseId);
         return feedbackList;
     }
 

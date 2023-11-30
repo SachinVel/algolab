@@ -3,6 +3,7 @@ package com.enpm613.algolab.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
@@ -11,10 +12,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 public class Feedback {
 
+    @Id
+    private String id;
     private User user;
-    private String courseId;
-    private String instructorId;
+    private Course course;
+    private User instructor;
     private String content;
+
+    public Feedback(User user, Course course, User instructor, String content) {
+        this.user = user;
+        this.course =course;
+        this.instructor = instructor;
+        this.content = content;
+    }
 
     public User getUser() {
         return user;
@@ -24,20 +34,20 @@ public class Feedback {
         this.user = user;
     }
 
-    public String getCourseId() {
-        return courseId;
+    public Course getCourse() {
+        return course;
     }
 
-    public void setCourseId(String course) {
-        this.courseId = courseId;
+    public void setCourse(Course course) {
+        this.course = course;
     }
 
-    public String getInstructorId() {
-        return instructorId;
+    public User getInstructor() {
+        return instructor;
     }
 
-    public void setInstructorId(String instructorId) {
-        this.instructorId = instructorId;
+    public void setInstructor(User instructor) {
+        this.instructor = instructor;
     }
 
     public String getContent() {
