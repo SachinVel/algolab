@@ -16,7 +16,7 @@ public class CustomUserDetails extends User implements UserDetails {
 
     public CustomUserDetails(User user) {
         this.username = user.getUsername();
-        this.password= user.getPassword();
+        this.password = user.getPassword();
         List<GrantedAuthority> auths = new ArrayList<>();
         auths.add(new SimpleGrantedAuthority(user.getRole().toString()));
         this.authorities = auths;
