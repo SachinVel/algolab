@@ -27,7 +27,7 @@ public class FeedbackService {
     private UserRepository userRepository;
 
     public Feedback addFeedback(Feedback feedback, User user, String courseId){
-            Course course = courseRepository.findByCourseId(courseId);
+            Course course = courseRepository.findById(courseId).get();
             Feedback newFeedback = new Feedback(user,course, course.getInstructor(), feedback.getContent());
             return feedbackRepository.save(newFeedback);
     }
