@@ -6,6 +6,7 @@ import Header from '../../components/Header';
 import AddIcon from '@mui/icons-material/Add';
 import MuiToggleButton from "@mui/material/ToggleButton";
 import backendCall from '../../utils/network';
+import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
 
 
 const s3Prefix = process.env.REACT_APP_S3_PREFIX;
@@ -39,6 +40,10 @@ export default function Course() {
             window.location = `/lesson/${course.id}`;
         }
 
+        const handleAnnouncementOnClick = (event) => {
+            window.location = `/${event.target.value}/${course.id}`;
+        };
+
         return (
             <Card>
                 <CardMedia
@@ -53,6 +58,13 @@ export default function Course() {
                     <Typography variant="body2" color="textSecondary">Difficulty: {course.difficulty}</Typography>
                     { isDelete && <Button color='error' onClick={handleDeleteCourse}>Delete</Button>}
                     { isDelete && <Button onClick={handleEditCourse}>Edit</Button>}
+                    <ToggleButtonGroup
+                        onChange={handleAnnouncementOnClick}
+                    >
+                        <ToggleButton value="announcement" aria-label="justified">
+                            <CircleNotificationsIcon /> Announcements
+                        </ToggleButton>
+                    </ToggleButtonGroup>
                 </CardContent>
             </Card>
         );
