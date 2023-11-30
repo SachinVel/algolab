@@ -56,13 +56,13 @@ const ReportIssue = () => {
 
     return (
         <div>
-            <Button variant="contained" color="primary" onClick={handleOpen}>
+            <Button sx={{height:"40px"}} variant="contained" color="error" onClick={handleOpen}>
                 Report Issue
             </Button>
 
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Report Issue</DialogTitle>
-                <DialogContent>
+                <DialogContent sx={{width:"500px"}}>
                     <TextField
                         label="Issue Title"
                         fullWidth
@@ -70,8 +70,10 @@ const ReportIssue = () => {
                         value={issueTitle}
                         onChange={(e) => setIssueTitle(e.target.value)}
                     />
-                    <FormControl fullWidth margin="normal">
-                        <InputLabel id="severity-label">Severity</InputLabel>
+                    <br></br>
+                    <br></br>
+                    <FormControl fullWidth margin="normal" sx={{height:"50px"}}>
+                        <InputLabel id="severity-label" sx={{top:"-10px"}} >Severity</InputLabel>
                         <Select
                             labelId="severity-label"
                             id="severity"
@@ -83,6 +85,8 @@ const ReportIssue = () => {
                             <MenuItem value="CRITICAL">Critical</MenuItem>
                         </Select>
                     </FormControl>
+                    <br></br>
+                    <br></br>
                     <TextField
                         label="Issue Description"
                         fullWidth

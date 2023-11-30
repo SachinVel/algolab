@@ -185,7 +185,13 @@ export default function Register({ setLoggedIn }) {
       }}>
         {/* <Header /> */}
         <div>
-          <Typography variant="h4" sx={{
+          <Typography variant="h3" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
+            Algolab
+          </Typography>
+          <Typography variant="h4" sx={{ color: '#555' }}>
+            Interview buddy partner
+          </Typography>
+          <Typography variant="h5" sx={{
             color: "#555",
             margin: "20px"
           }}>Register</Typography>
@@ -391,14 +397,14 @@ export default function Register({ setLoggedIn }) {
         disableWindowBlurListener={true}
       >
         {
-            errorMesage &&
-            <>
-              <Alert onClose={hanldeErrSnackbarClose} severity="error">
-                {errorMesage}
-              </Alert>
-              <br></br>
-            </>
-          }
+          errorMesage &&
+          <>
+            <Alert onClose={hanldeErrSnackbarClose} severity="error">
+              {errorMesage}
+            </Alert>
+            <br></br>
+          </>
+        }
       </Snackbar>
     </>
 

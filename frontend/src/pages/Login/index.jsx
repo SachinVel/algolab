@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, TextField, Link, Box, Typography } from '@mui/material';
+import { Button, TextField, Link, Box, Typography, Container } from '@mui/material';
 
 import MuiAlert from '@mui/material/Alert';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -124,7 +124,13 @@ export default function Login({ setLoggedIn }) {
         left: "50%",
         transform: "translate(-50%, -50%)"
       }}>
-        <Typography variant="h4" sx={{
+        <Typography variant="h3" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
+          Algolab
+        </Typography>
+        <Typography variant="h4" sx={{ color: '#555' }}>
+          Interview buddy partner
+        </Typography>
+        <Typography variant="h5" sx={{
           color: "#555",
           margin: "20px"
         }}>Login</Typography>
@@ -169,7 +175,7 @@ export default function Login({ setLoggedIn }) {
             <p>
               Don't have an account?{' '}
               <Link to="/register">
-                <Button>Register</Button>
+                <Button onClick={()=>{window.location='/register'}}>Register</Button>
               </Link>
             </p>
           </div>
