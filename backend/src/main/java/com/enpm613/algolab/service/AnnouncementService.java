@@ -31,9 +31,10 @@ public class AnnouncementService {
     private final MongoTemplate mongoTemplate;
 
     @Autowired
-    public AnnouncementService(S3Service s3Service,MongoTemplate mongoTemplate) {
+    public AnnouncementService(S3Service s3Service,MongoTemplate mongoTemplate, AnnouncementRepository announcementRepository) {
         this.s3Service = s3Service;
         this.mongoTemplate = mongoTemplate;
+        this.announcementRepository = announcementRepository;
 
     }
     
