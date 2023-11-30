@@ -72,9 +72,9 @@ export default function Header() {
                         </ToggleButton>
                     }
 
-                    <ToggleButton value="announcement" aria-label="justified">
-                        <CircleNotificationsIcon /> Announcement
-                    </ToggleButton>
+                    {/*<ToggleButton value="announcement" aria-label="justified">*/}
+                    {/*    <CircleNotificationsIcon /> Announcement*/}
+                    {/*</ToggleButton>*/}
                     <ToggleButton value="profile" aria-label="justified">
                         <Person2Icon /> Profile
                     </ToggleButton>

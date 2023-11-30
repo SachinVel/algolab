@@ -66,7 +66,7 @@ public class FeedbackController {
     @PreAuthorize("hasAnyAuthority('INSTRUCTOR')")
     @ResponseBody
     public List<Feedback> getFeedbackByInstructor(@AuthenticationPrincipal UserDetails user, @PathVariable String instructorId) {
-        List<Feedback> feedbackList = feedbackService.viewFeedbackByCourse(instructorId);
+        List<Feedback> feedbackList = feedbackService.viewFeedbackByInstructor(instructorId);
         return feedbackList;
     }
 
