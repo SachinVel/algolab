@@ -28,14 +28,16 @@ export default function Course() {
             }
         };
 
-        const handleDeleteCourse = async () => {
-            await backendCall.delete('/api/v1/deleteCourse?courseId=' + course.id, config).then((res) => {
-                console.log('getUserDetails response : ', res);
+        const handleDeleteCourse =(event) => {
+            backendCall.delete('/api/v1/deleteCourse?courseId=' + course.id, config).then((res) => {
+                console.log('handleDeleteCourse response : ', event);
                 getUserCourses(token);
                 getAllCourses(token);
+                
             }).catch((err) => {
 
             });
+            event.stopPropagation();
         }
 
         const handleEditCourse = async () => {

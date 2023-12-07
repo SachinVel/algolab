@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import './feedback.module.css';
 import Header from "../../components/Header";
 import styles from "../Feedback/feedback.module.css";
@@ -18,7 +18,7 @@ import backendCall from "../../utils/network";
 import Snackbar from "@mui/material/Snackbar";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-export default function Feedback({}) {
+export default function Feedback({ }) {
     const [token, setToken] = useState('');
     const [role, setRole] = useState('');
 
@@ -107,21 +107,20 @@ export default function Feedback({}) {
                 'Authorization': `Bearer ${token}`
             }
         };
-
         await backendCall.get('/api/v1/feedback/viewCourseFeedbackByInstructor/' + username, config)
             .then((res) => {
                 console.log('getFeedbackByInstructor response : ', res);
                 let feedbackByInstructor = res.data;
                 setFeedbackByInstructor(feedbackByInstructor);
-        }).catch((err) => {
-            console.log('login error : ', err);
-            if (err.response && err.response.data && err.response.data.error) {
-                console.log('err : ', err);
-                setMessage(err.response.data.error);
-                setSnackType('error');
-                setIsSnackbarOpen(true);
-            }
-        });
+            }).catch((err) => {
+                console.log('login error : ', err);
+                if (err.response && err.response.data && err.response.data.error) {
+                    console.log('err : ', err);
+                    setMessage(err.response.data.error);
+                    setSnackType('error');
+                    setIsSnackbarOpen(true);
+                }
+            });
     }
 
     const getAllCourses = async (token) => {
@@ -245,27 +244,32 @@ export default function Feedback({}) {
                                 </Button>
                             </>
                         )}
-
-                        {role === 'INSTRUCTOR' && (
-                            <>
-                                <Typography variant="h5" gutterBottom>
-                                    Feedbacks
-                                </Typography>
-                                {feedbackByInstructor.map((feedbackItem) => (
-                                    <Accordion key={feedbackItem.id}>
-                                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                            <Typography>{feedbackItem.course.title}</Typography>
-                                        </AccordionSummary>
-                                        <AccordionDetails>
-                                            <Typography>{feedbackItem.content}</Typography>
-                                        </AccordionDetails>
-                                    </Accordion>
-                                ))}
-                            </>
-                        )}
                     </Box>
                 </Box>
             )}
+
+            {role === 'INSTRUCTOR' && (
+                <>
+                    <Box>
+                        <Box>
+                            <Typography variant="h5" gutterBottom>
+                                Feedbacks
+                            </Typography>
+                            {feedbackByInstructor.map((feedbackItem) => (
+                                <Accordion key={feedbackItem.id}>
+                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                        <Typography>{feedbackItem.course.title}</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Typography>{feedbackItem.content}</Typography>
+                                    </AccordionDetails>
+                                </Accordion>
+                            ))}
+                        </Box>
+                    </Box>
+                </>
+            )}
+            
             {role === 'ADMIN' && (
                 <>
                     <Box>
