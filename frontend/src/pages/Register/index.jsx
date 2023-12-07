@@ -44,21 +44,25 @@ export default function Register({ setLoggedIn }) {
         password: 'Password must be at least 8 characters.'
       }));
       valid = false;
-    } else if (!/(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])/.test(password)) {
+    }else {
+      setErrors((prevErrors) => ({ ...prevErrors, password: '' }));
+    }
+
+    if(!/(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])/.test(password)) {
       setErrors((prevErrors) => ({
         ...prevErrors,
         password: 'Password must contain at least one letter, one number, and one special character.'
       }));
       valid = false;
-    } else {
-      setErrors((prevErrors) => ({ ...prevErrors, password: '' }));
-    }
+    } 
 
     // Validate confirmPassword
     if (confirmPassword !== password) {
       setErrors((prevErrors) => ({ ...prevErrors, password: 'Passwords do not match.' }));
       valid = false;
-    } else {
+    }
+
+    if( valid){
       setErrors((prevErrors) => ({ ...prevErrors, password: '' }));
     }
 
@@ -345,20 +349,20 @@ export default function Register({ setLoggedIn }) {
           }
 
           {
-            errors.password &&
+            errors.email &&
             <>
               <Alert onClose={hanldeErrSnackbarClose} severity="error">
-                {errors.password}
+                {errors.email}
               </Alert>
               <br></br>
             </>
           }
 
           {
-            errors.email &&
+            errors.password &&
             <>
               <Alert onClose={hanldeErrSnackbarClose} severity="error">
-                {errors.email}
+                {errors.password}
               </Alert>
               <br></br>
             </>
@@ -388,23 +392,6 @@ export default function Register({ setLoggedIn }) {
 
         </Box>
 
-      </Snackbar>
-
-      <Snackbar
-        open={isErrSnackbarOpen}
-        autoHideDuration={4000}
-        onClose={hanldeErrSnackbarClose}
-        disableWindowBlurListener={true}
-      >
-        {
-          errorMesage &&
-          <>
-            <Alert onClose={hanldeErrSnackbarClose} severity="error">
-              {errorMesage}
-            </Alert>
-            <br></br>
-          </>
-        }
       </Snackbar>
     </>
 
