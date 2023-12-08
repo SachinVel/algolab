@@ -278,7 +278,6 @@ export default function Lesson() {
     const [openAnswer, setOpenAnswer] = useState({});
 
     const handleToggleAnswer = (questionId) => {
-        console.log('prevOpenAns : ', openAnswer);
         setOpenAnswer((prevOpenAnswer) => ({
             ...prevOpenAnswer,
             [questionId]: !prevOpenAnswer[questionId],
@@ -333,10 +332,8 @@ export default function Lesson() {
         };
         let isOwner = false;
         backendCall.get('/api/v1/course?courseId=' + courseId, config).then((res) => {
-            console.log('getCourse response : ', res);
             setCourse(res.data);
         }).catch((err) => {
-            console.log('login error : ', err);
             if (err.response && err.response.data && err.response.data.error) {
                 console.log('err : ', err);
                 setMessage(err.response.data.error);
@@ -354,10 +351,8 @@ export default function Lesson() {
         };
         let isOwner = false;
         await backendCall.get('/api/v1/checkCourse?courseId=' + courseId, config).then((res) => {
-            console.log('getUserDetails response : ', res);
             isOwner = res.data;
         }).catch((err) => {
-            console.log('login error : ', err);
             if (err.response && err.response.data && err.response.data.error) {
                 console.log('err : ', err);
                 setMessage(err.response.data.error);
@@ -383,10 +378,8 @@ export default function Lesson() {
         };
 
         await backendCall.get('/api/v1/getLesson?lessonId=' + lessonId, config).then((res) => {
-            console.log('getUserDetails response : ', res);
             setLessonData(res.data);
         }).catch((err) => {
-            console.log('login error : ', err);
             if (err.response && err.response.data && err.response.data.error) {
                 console.log('err : ', err);
                 showErrorToast(err.response.data.error)
@@ -403,10 +396,8 @@ export default function Lesson() {
         };
 
         await backendCall.get('/api/v1/getLessonPages/' + courseId, config).then((res) => {
-            console.log('getLessons response : ', res);
             setLessons(res.data);
         }).catch((err) => {
-            console.log('login error : ', err);
             if (err.response && err.response.data && err.response.data.error) {
                 console.log('err : ', err);
                 setMessage(err.response.data.error);

@@ -30,7 +30,6 @@ export default function Course() {
 
         const handleDeleteCourse =(event) => {
             backendCall.delete('/api/v1/deleteCourse?courseId=' + course.id, config).then((res) => {
-                console.log('handleDeleteCourse response : ', event);
                 getUserCourses(token);
                 getAllCourses(token);
                 
@@ -45,7 +44,6 @@ export default function Course() {
         }
 
         const handleAnnouncementOnClick = (event) => {
-            console.log('handleAnnouncement');
             window.location = `/announcement/${course.id}`;
             event.stopPropagation();
         };
@@ -127,7 +125,6 @@ export default function Course() {
             });
             getAllCourses(token);
             getUserCourses(token);
-            console.log(response.data);
         } catch (error) {
             console.error(error);
         }
@@ -146,7 +143,6 @@ export default function Course() {
     useEffect(() => {
         let role = window.localStorage.getItem('role');
         let token = window.localStorage.getItem('token');
-        console.log('token : ', token)
         setToken(token);
         if (token == null || token == '') {
             window.localStorage.removeItem('token');
@@ -173,13 +169,10 @@ export default function Course() {
         };
 
         await backendCall.get('/api/v1/userCourses', config).then((res) => {
-            console.log('getUserDetails response : ', res);
             let userData = res.data;
             setUserCourses(userData);
         }).catch((err) => {
-            console.log('login error : ', err);
             if (err.response && err.response.data && err.response.data.error) {
-                console.log('err : ', err);
                 setMessage(err.response.data.error);
                 setSnackType('error');
                 setIsSnackbarOpen(true);
@@ -196,11 +189,9 @@ export default function Course() {
         };
 
         await backendCall.get('/api/v1/allCourses', config).then((res) => {
-            console.log('getUserDetails response : ', res);
             let userData = res.data;
             setAllCourses(userData);
         }).catch((err) => {
-            console.log('login error : ', err);
             if (err.response && err.response.data && err.response.data.error) {
                 console.log('err : ', err);
                 setMessage(err.response.data.error);

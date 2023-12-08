@@ -10,8 +10,6 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-// const salt = bcrypt.genSaltSync(10)
-// console.log('salt : ',salt);
 const salt = process.env.REACT_APP_SALT;
 
 export default function Login({ setLoggedIn }) {
@@ -36,14 +34,12 @@ export default function Login({ setLoggedIn }) {
 
   const login = async (event) => {
     event.preventDefault();
-    console.log(salt);
     // const hashedPassword = bcrypt.hashSync(password, salt);
 
     await backendCall.post('/api/v1/login', {
       username: username,
       password: password,
     }).then((res) => {
-      console.log('login response : ', res);
       // window.localStorage.setItem('token', res.data.token);
       window.localStorage.setItem('token', res.data.token);
       window.localStorage.setItem('role', res.data.role);

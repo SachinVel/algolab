@@ -69,14 +69,6 @@ const Sidebar = () => {
         setActiveIndex(curPath.length === 0 ? 0 : activeItem);
     }, [location]);
 
-    // const handleLinkClick = (event,linkType) => {
-    //     console.log('linkType : ',linkType);
-    //     if( linkType==='logout' ){
-    //         event.stopPropogation();
-    //     }
-
-    // }
-
     return <div className='sidebar'>
         <div className="sidebar__logo">
             Couple Yelp

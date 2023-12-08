@@ -64,7 +64,6 @@ export default function Feedback({ }) {
 
         await backendCall.get('/api/v1/feedback/viewAll', config)
             .then((res) => {
-                console.log('getAllFeedback response : ', res);
                 let allFeedback = res.data;
                 setAllFeedback(allFeedback);
             }).catch((err) => {
@@ -86,12 +85,10 @@ export default function Feedback({ }) {
         };
 
         await backendCall.get('/api/v1/userDetails', config).then((res) => {
-            console.log('getUserDetails response : ', res);
             let userData = res.data;
             setInstructorUsername(userData.username);
             getFeedbackByInstructor(token, userData.username);
         }).catch((err) => {
-            console.log('login error : ', err);
             if (err.response && err.response.data && err.response.data.error) {
                 console.log('err : ', err);
                 setMessage(err.response.data.error);
@@ -109,13 +106,10 @@ export default function Feedback({ }) {
         };
         await backendCall.get('/api/v1/feedback/viewCourseFeedbackByInstructor/' + username, config)
             .then((res) => {
-                console.log('getFeedbackByInstructor response : ', res);
                 let feedbackByInstructor = res.data;
                 setFeedbackByInstructor(feedbackByInstructor);
             }).catch((err) => {
-                console.log('login error : ', err);
                 if (err.response && err.response.data && err.response.data.error) {
-                    console.log('err : ', err);
                     setMessage(err.response.data.error);
                     setSnackType('error');
                     setIsSnackbarOpen(true);
@@ -131,11 +125,9 @@ export default function Feedback({ }) {
         };
 
         await backendCall.get('/api/v1/allCourses', config).then((res) => {
-            console.log('getAllCourses response : ', res);
             let coursesData = res.data;
             setAllCourses(coursesData);
         }).catch((err) => {
-            console.log('login error : ', err);
             if (err.response && err.response.data && err.response.data.error) {
                 console.log('err : ', err);
                 setMessage(err.response.data.error);
@@ -155,8 +147,6 @@ export default function Feedback({ }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Feedback submitted: ', feedback);
-        console.log("courseId: " + courseId);
         submitFeedback(token).then(() => {
             setSubmitted(true);
             setFeedback('');
@@ -177,9 +167,7 @@ export default function Feedback({ }) {
             content: feedback
         }, config)
             .then((res) => {
-                console.log('submitFeedback response : ', res);
             }).catch((err) => {
-                console.log('login error : ', err);
                 if (err.response && err.response.data && err.response.data.error) {
                     console.log('err : ', err);
                     setMessage(err.response.data.error);
@@ -269,7 +257,7 @@ export default function Feedback({ }) {
                     </Box>
                 </>
             )}
-            
+
             {role === 'ADMIN' && (
                 <>
                     <Box>

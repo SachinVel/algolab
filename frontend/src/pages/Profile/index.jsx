@@ -49,7 +49,6 @@ export default function Profile() {
   useEffect(() => {
     let role = window.localStorage.getItem('role');
     let token = window.localStorage.getItem('token');
-    console.log('token : ', token)
     setToken(token);
     if (token == null || token == '') {
       window.localStorage.removeItem('token');
@@ -69,7 +68,6 @@ export default function Profile() {
     };
 
     await backendCall.get('/api/v1/userDetails', config).then((res) => {
-      console.log('getUserDetails response : ', res);
       let userData = res.data;
       setBio(userData.bio);
       setEmail(userData.email);
@@ -108,7 +106,6 @@ export default function Profile() {
       };
 
       await backendCall.post('/api/v1/userDetails', data, config).then((res) => {
-        console.log("sucess")
         window.localStorage.setItem('role', role);
         window.localStorage.setItem('token', res.data);
         setPassword('');

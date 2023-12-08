@@ -57,11 +57,9 @@ export default function Announcement({}) {
         };
 
         await backendCall.get('/api/v1/userDetails', config).then((res) => {
-            console.log('getUserDetails response : ', res);
             let userData = res.data;
             setUsername(userData.username);
         }).catch((err) => {
-            console.log('login error : ', err);
             if (err.response && err.response.data && err.response.data.error) {
                 console.log('err : ', err);
                 setMessage(err.response.data.error);
@@ -80,13 +78,11 @@ export default function Announcement({}) {
 
         await backendCall.get('/api/v1/announcement/allAnnouncements/' + courseId, config)
             .then((res) => {
-                console.log('getAllAnnouncements response : ', res);
                 let allAnnouncements = res.data;
                 setAllAnnouncements(allAnnouncements);
             }).catch((err) => {
                 console.log('login error : ', err);
                 if (err.response && err.response.data && err.response.data.error) {
-                    console.log('err : ', err);
                     setMessage(err.response.data.error);
                     setSnackType('error');
                     setIsSnackbarOpen(true);
@@ -126,7 +122,6 @@ export default function Announcement({}) {
             content: announcementContent
         }, config)
             .then((res) => {
-                console.log('createAnnouncement response : ', res);
                 getAllAnnouncementsByCourse(token);
             }).catch((err) => {
                 console.log('login error : ', err);
@@ -152,7 +147,6 @@ export default function Announcement({}) {
 
         await backendCall.delete('/api/v1/announcement/deleteAnnouncement/' + announcementId, config)
             .then((res) => {
-                console.log('deleteAnnouncement response : ', res);
                 getAllAnnouncementsByCourse(token);
             }).catch((err) => {
                 console.log('login error : ', err);
