@@ -22,7 +22,6 @@ function App() {
 
   useEffect(() => {
     let userToken = localStorage.getItem('token');
-    console.log('userToken : ', userToken);
     if (userToken != null && userToken != '') {
       setLoggedIn(true);
     } else {

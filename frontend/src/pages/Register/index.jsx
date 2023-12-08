@@ -48,10 +48,10 @@ export default function Register({ setLoggedIn }) {
       setErrors((prevErrors) => ({ ...prevErrors, password: '' }));
     }
 
-    if(!/(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])/.test(password)) {
+    if(!/(?=.*[a-zA-Z])(?=.*\d)(?=.*[@#$%^&+=]+])/.test(password)) {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        password: 'Password must contain at least one letter, one number, and one special character.'
+        password: 'Password must contain at least one letter, one number, and one special character in this set(@#$%^&+=]).'
       }));
       valid = false;
     } 
